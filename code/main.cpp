@@ -18,9 +18,17 @@ int main()
     // // d2.dropFolder();
     // useDb u("people");
     // u.useFolder(&str);
-    // creatTable c2(str,"student");
+    // creatTable c2("people","student");
     // c2.tbfile();
     // dropTable d("people","student");
     // d.dropFile();
+    tableOp t;
+    ifstream i;
+    i = t.readTable<ifstream>("people", "student");
+    char data[100];
+    i >> data;
+    cout << data << endl;
+    t.closeTable<ifstream>(i);
+
 
 }

@@ -1,6 +1,9 @@
 #include <iostream>
 #include <fstream>
+#include <sys/stat.h>
+#include <sys/types.h> 
 #include <string>
+#include <unistd.h>
 using namespace std;
 
 //创建数据库
@@ -75,4 +78,30 @@ public:
         this->useName = dbUseName;
     }
     void useFolder(string *str);
+};
+
+//读写表
+class tableOp
+{
+protected:
+    string rootPath = "../data/";
+public:
+    template <typename T>
+    T readTable(string database, string table)
+    {
+        string path = rootPath + database + '/' + table + ".dat";
+        T file;
+        // file.open(path);
+        if(access(path.c_str(),F_OK) == 0){
+            file.open(path);
+        }else{
+            cout << "Table not exists" << endl;
+        }
+        return file;
+    }
+
+    template <typename T>
+    void closeTable(T& file){
+        file.close();
+    }   
 };

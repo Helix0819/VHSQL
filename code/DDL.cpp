@@ -24,8 +24,12 @@ void creatTable::tbfile()
 {
     ofstream file;
     string path = rootPath + database + '/' + this->name + ".dat";
-    file.open(path);
-    file.close();
+    if(access(path.c_str(),F_OK) == 0){
+        cout << "Table exits" << endl;
+    }else{
+        file.open(path);
+        file.close();
+    }
 }
 
 //删除数据库
@@ -44,7 +48,12 @@ void dropDb::dropFolder()
 void dropTable::dropFile()
 {
     string path = rootPath + this->dropName + '/' + dropTableName + ".dat";
-    remove(path.c_str());
+    if(access(path.c_str(),F_OK) == 0)
+    {
+        remove(path.c_str());
+    }else{
+        cout << "Table not exists" << endl;
+    }
 }
 
 // 切换数据库

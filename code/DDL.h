@@ -6,6 +6,13 @@
 #include <unistd.h>
 using namespace std;
 
+class creatDb;
+class creatTable;
+class dropDb;
+class dropTable;
+class useDb;
+class tableOp;
+
 //创建数据库
 class creatDb
 {
@@ -33,7 +40,9 @@ public:
         this->name = tbName;
         this->database = dbName;
     }
-    void tbfile();
+    ofstream tbFile();
+    template <typename T>
+    void tbType(T *type);
 };
 
 //删除数据库
@@ -80,7 +89,7 @@ public:
     void useFolder(string *str);
 };
 
-//读写表
+//打开表
 class tableOp
 {
 protected:
@@ -93,7 +102,7 @@ public:
         T file;
         // file.open(path);
         if(access(path.c_str(),F_OK) == 0){
-            file.open(path);
+            file.open(path,ios::app);
         }else{
             cout << "Table not exists" << endl;
         }
@@ -103,5 +112,6 @@ public:
     template <typename T>
     void closeTable(T& file){
         file.close();
-    }   
+    }
 };
+

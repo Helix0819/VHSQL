@@ -1,15 +1,14 @@
 #include <iostream>
+#include <string>
 #include <fstream>
-#include <vector>
+#include <stdlib.h>
 #include <list>
-#include "DML.h"
+#include <vector>
 using namespace std;
 
-/******************************************************************************************/
-//插入表数据
 //将用0表示string, 1表示int
 //其中参数中第一个参数为将输入的插入数据SQL语句进行分析后,提出插入的数据生成并放入list容器中
-void insertTable::insertCheck(list<pair<string*, int*>> l)
+void insertCheck(list<pair<string*, int*>> l, vector<int> l2)
 {
     string *a;
     int *b;
@@ -25,9 +24,8 @@ void insertTable::insertCheck(list<pair<string*, int*>> l)
             //说明存储的第一个属性是string类型
         }
     }
-    if(born == this->dataFormat){
+    if(born == l2){
         cout << "数据插入合法" << endl;
-        //将在这儿调用读写文件类中的写文件方法,将list容器写入表中
     }else{
         cout << "数据插入非法" << endl;
     }
@@ -65,4 +63,52 @@ void insertGene(string dataUnit, list<pair<string*, int*>> *l)
     l->push_back(p);//maybe wrong here
 }
 
-/******************************************************************************************/
+int main()
+{
+    // var a;
+    // // a = (var*)malloc(sizeof(var*));
+    // //为了不出现空指针错误,要进行三步,给不用的指针赋空值,给用的分配内存,然后赋值
+    // a.a = nullptr;
+    // a.b = (string*)malloc(sizeof(string));
+    // *a.b = "niaho";
+    // if(a.a == nullptr)
+    // {
+    //     cout << *a.b;
+    // }else{
+    //     cout << *a.a;
+    // }
+    // type.push_back(0);
+    // type.push_back(1);
+    // for(list<int>::iterator it = type.begin(); it != type.end(); it++){
+    //     cout << *it << "\t";
+    // }
+    // cout << endl;
+    // list<pair<string*, int*>> ll;
+    // string str = "Tom";
+    // int a = 18;
+    // pair<string*, int*> p(&str,&a);
+    // ll.push_back(p);
+    // string str2 = "Jer";
+    // int a2 = 22;
+    // pair<string*, int*> p2(&str2,&a2);
+    // ll.push_back(p2);
+    // list<pair<string*, int*>>::iterator it = ll.begin();
+    // pair<string*, int*> p0;
+    // p0 = *it;
+    // cout << *p0.first;
+
+    list<pair<string*, int*>> tes;
+    insertGene("zhanghaoyu", &tes);
+    insertGene("123", &tes);
+    // list<pair<string*, int*>>::iterator it = tes.begin();
+    // pair<string*, int*> p0;
+    // p0 = *it;
+    // cout << *p0.first << endl;
+    // it++;
+    // p0 = *it;
+    // cout << *p0.second << endl;
+    vector<int> v;
+    v.push_back(1);
+    v.push_back(0);
+    insertCheck(tes, v);
+}

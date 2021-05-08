@@ -20,7 +20,7 @@ void creatDb::dbFolder()
 }
 
 // 创建表
-void creatTable::tbfile()
+ofstream creatTable::tbFile()
 {
     ofstream file;
     string path = rootPath + database + '/' + this->name + ".dat";
@@ -28,8 +28,16 @@ void creatTable::tbfile()
         cout << "Table exits" << endl;
     }else{
         file.open(path);
-        file.close();
+        // file.close();
     }
+    return file;
+}
+
+template <typename T>
+void creatTable::tbType(T *type)
+{
+    // ofstream file = this->tbFile();
+
 }
 
 //删除数据库

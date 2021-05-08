@@ -24,11 +24,5 @@
 
 删除表：dropTable
 
-==DML==
 
-查询表：selectTable
-
-删除表（记录）：deleteTable
-
-插入表：insertTable
 

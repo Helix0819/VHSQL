@@ -19,7 +19,7 @@ int main()
     // useDb u("people");
     // u.useFolder(&str);
     // creatTable c2("people","student");
-    // c2.tbfile();
+    // c2.tbFile();
     // dropTable d("people","student");
     // d.dropFile();
     tableOp t;
@@ -27,8 +27,13 @@ int main()
     i = t.readTable<ifstream>("people", "student");
     char data[100];
     i >> data;
-    cout << data << endl;
+    cout << data + '\n' << endl;
+    // cout << typeid(data)
     t.closeTable<ifstream>(i);
+    // ofstream i2;
+    // i2 = t.readTable<ofstream>("people", "student");
+    // cin >> data;
+    // i2 << data << endl;
 
 
 }

@@ -24,5 +24,13 @@
 
 删除表：dropTable
 
+#### SQLParser
+
+找了一个开源的SQLParser 使用flex&bison 编写
+
+源码在parser文件夹，具体使用方法放了一个小demo
+
+parser文件夹下make即可，命令行参要数提供解析的SQL语句
+
 
 

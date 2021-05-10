@@ -28,9 +28,9 @@
 
 找了一个开源的SQLParser 使用flex&bison 编写
 
-源码在parser文件夹，具体使用方法放了一个小demo
+源码在parser文件夹，具体使用方法在parser/src放了一个小demo
 
-parser文件夹下make即可，命令行参要数提供解析的SQL语句
+在parser文件夹下make即可，添加命令行参数提供要解析的SQL语句
 
 
 

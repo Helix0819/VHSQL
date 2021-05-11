@@ -24,6 +24,8 @@
 
 删除表：dropTable
 
+
+
 #### SQLParser
 
 找了一个开源的SQLParser 使用flex&bison 编写
@@ -31,6 +33,11 @@
 源码在parser文件夹，具体使用方法在parser/src放了一个小demo
 
 在parser文件夹下make即可，添加命令行参数提供要解析的SQL语句
+
+补充:
+makefile中添加了install、uninstall
+root 模式下运行 make install 
+
 
 
 

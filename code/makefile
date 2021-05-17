@@ -1,4 +1,4 @@
 all:
-	g++ main.cpp DDL.cpp DML.cpp -o app -std=c++11
+	g++ main.cpp DML.cpp DDL.cpp -o a -std=c++11
 clean:
-	rm app
+	rm a

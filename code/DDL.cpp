@@ -66,7 +66,7 @@ void dropTable::dropFile()
 
 // 切换数据库
 
-void useDb::useFolder(string *str)
+string useDb::useFolder()
 {
-    *str = this->useName;
+    return rootPath + this->useName;
 }

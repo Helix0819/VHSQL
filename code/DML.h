@@ -9,10 +9,17 @@ class insertTable
 {
 protected:
     vector<int> dataFormat;
+    string tableName;
+    string database;
+    vector<string> insertData;
 public:
-    insertTable(vector<int> exam){
+    insertTable(vector<int> exam, string name, string globalPath, vector<string> con){
         this->dataFormat = exam;
+        this->tableName = name;
+        this->database = globalPath;
+        this->insertData = con;
+        this->insertGene();
     }
-    void insertCheck(list<pair<string*, int*>> l);
-    void insertGene(string dataUnit, list<pair<string*, int*>> *l);
+    void insertGene();
+    void insertWrite(vector<string> v);
 };

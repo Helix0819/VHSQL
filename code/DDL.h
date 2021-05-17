@@ -86,7 +86,7 @@ public:
     {
         this->useName = dbUseName;
     }
-    void useFolder(string *str);
+    string useFolder();
 };
 
 //打开表

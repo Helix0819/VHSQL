@@ -4,6 +4,14 @@
 #include<string>
 #include<map>
 #include "table.h"
+#include "DDL.h"
+#include "DML.h"
+#include "SQLParser.h"
+// contains printing utilities
+#include "util/sqlhelper.h"
+
+using column = std::pair<std::string,int>;
+
 class DB
 {
 private:
@@ -12,7 +20,7 @@ private:
     std::map<std::string, table*> tables;
 
 public:
-    std::string create_table();
+    std::string create_table(const hsql::CreateStatement* stmt);
 
     std::string drop_table();
 
@@ -25,3 +33,4 @@ public:
     std::string del();
 
 };
+

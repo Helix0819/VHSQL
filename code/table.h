@@ -42,5 +42,7 @@ public:
     
     void insertWrite(std::vector<std::string> v);
 
+    void load_data_from_file(std::string path,int lineNum);
+
     
 };

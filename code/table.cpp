@@ -1,7 +1,10 @@
 
 #include "table.h"
 //#include "SQLParser.h"
-#include "dbms.h"
+#include "DDL.h"
+
+#include "file.h"
+#include<vector>
 
 using namespace std;
 
@@ -66,7 +69,7 @@ void table::insert(vector<string> insertdata)
 
 void table::insertWrite(vector<string> v)
 {
-    fstream file(table::database + '/' + tableName + ".dat", ios::app|ios::binary);
+    fstream file(database + '/' + tableName + ".dat", ios::app|ios::binary);
     string s;
     vector<string>::iterator it = v.begin();
     while (it != v.end())
@@ -84,5 +87,40 @@ void table::insertWrite(vector<string> v)
     }
     file << endl;
     file.close();
+   
     
+}
+
+void table::load_data_from_file(std::string path,int lineNum)
+{
+    if(!File::file_exists(path))
+        File::create_empty_file(path);
+
+    auto is = File::read(path);
+
+    std::string val;
+    std::vector<std::string> row;
+
+    int line = 1;
+
+    while(getline(is,val))
+    {
+        if(line == lineNum -1)
+        {
+            for(int i=0;i < column_types.size();++i)
+            {
+                is >> val;
+                row.push_back(val);
+            }
+        }
+        line++;
+    }
+
+    is.eof();
+    vector<string>::iterator it = row.begin();
+
+    for(;it != row.end();++it)
+    {
+        std::cout<<*it<<" ";
+    }
 }

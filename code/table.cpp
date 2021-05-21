@@ -91,7 +91,7 @@ void table::insertWrite(vector<string> v)
     
 }
 
-void table::load_data_from_file(std::string path,int lineNum)
+std::vector<std::string> table::load_data_from_file(std::string path,int lineNum)
 {
     if(!File::file_exists(path))
         File::create_empty_file(path);
@@ -105,6 +105,12 @@ void table::load_data_from_file(std::string path,int lineNum)
 
     while(getline(is,val))
     {
+        if(is.eof())
+        {
+            std::cout<<"file end"<<std::endl;
+            break;
+        }
+
         if(line == lineNum -1)
         {
             for(int i=0;i < column_types.size();++i)
@@ -116,11 +122,125 @@ void table::load_data_from_file(std::string path,int lineNum)
         line++;
     }
 
-    is.eof();
-    vector<string>::iterator it = row.begin();
+    is.close();
+    //is.eof();
 
-    for(;it != row.end();++it)
+    return row;
+    // vector<string>::iterator it = row.begin();
+
+    // for(;it != row.end();++it)
+    // {
+    //     std::cout<<*it<<" ";
+    // }
+}
+
+std::vector<std::string> table::load_one_row_from_data(std::string path)
+{
+    if(!File::file_exists(path))
+        File::create_empty_file(path);
+
+    auto is = File::read(path);
+
+    std::string val;
+    std::vector<std::string> row;
+
+    for(int i=0;i < column_types.size();++i)
     {
-        std::cout<<*it<<" ";
+        is >> val;
+        row.push_back(val);
     }
+
+    is.close();
+    return row;
+}
+
+void table::del(const hsql::DeleteStatement* stmt)
+{
+    std::string tablename = stmt->tableName;
+
+    std::string columname = stmt->expr->expr->name;
+    
+    std::string columnvalue = stmt->expr->expr2->name;
+
+    std::string fmtpath = "../data/" + tableName + "/"+tablename+".fmt";
+
+    std::string datapath = "../data/" + tablename + "/" + tablename + ".dat";
+    
+    int colnum = 0;
+
+    int rownum = 0;
+
+    if(!File::file_exists(fmtpath))
+    {
+        std::cout<<"table doesn't exist!\n";
+        return ;
+    }
+
+    std::vector<std::string> tmp;
+
+
+    tmp = load_one_row_from_data(fmtpath);
+
+    for(size_t i = 0;i < column_types.size();++i)
+    {
+        if(tmp[i] == columname)
+        {
+            colnum = i;
+            break;
+        }
+
+    }
+
+    int i = 2;
+
+    while(true)
+    {
+        tmp = load_data_from_file(datapath,i);
+
+        if(tmp[colnum] == columnvalue)
+        {
+            rownum = i;
+            break;
+        }
+
+        i++;
+    }
+
+    auto in = File::read(datapath);
+
+    int line = 1;
+
+    std::string val1;//a tmp variable;
+    std::string strinputfile;
+
+    while(getline(in,val1))
+    {
+        if(line == rownum)
+        {
+            strinputfile += "\n"; 
+        }else
+        {
+            strinputfile += val1;
+            strinputfile += "\n";
+        }
+        line++;
+    }
+    in.close();
+
+    ofstream out;
+    out.open(datapath);
+    out.flush();
+    out<<strinputfile;
+    out.close();
+
+
+
+
+
+    //std::cout<<"delete row "<<rownum<<std::endl;
+
+
+
+
+
 }

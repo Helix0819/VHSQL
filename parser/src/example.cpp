@@ -29,18 +29,22 @@ int main(int argc, char* argv[]) {
     for (auto i = 0u; i < result.size(); ++i) {
       // Print a statement summary.
       hsql::printStatementInfo(result.getStatement(i));
-      auto stmt = (const hsql::CreateStatement*) result.getStatement(i);
-      std::string x = stmt->tableName;
-      std::cout<<x<<std::endl;
-      std::vector<hsql::ColumnDefinition*>::iterator it = stmt->columns->begin();
-      for(;it!=stmt->columns->end();++it)
-      {
+
+      auto stmt = (const hsql::DeleteStatement*) result.getStatement(i);
+
+      std::cout<<stmt->expr->expr2->name<<std::endl;
+      // auto stmt = (const hsql::CreateStatement*) result.getStatement(i);
+      // std::string x = stmt->tableName;
+      // std::cout<<x<<std::endl;
+      // std::vector<hsql::ColumnDefinition*>::iterator it = stmt->columns->begin();
+      // for(;it!=stmt->columns->end();++it)
+      // {
         
-        std::cout<<(*it)->name<<std::endl;
-        auto ret = (*it)->type;
-        //(*it)->type.data_types;
-        std::cout<<ret<<std::endl;
-      }
+      //   std::cout<<(*it)->name<<std::endl;
+      //   auto ret = (*it)->type;
+      //   //(*it)->type.data_types;
+      //   std::cout<<ret<<std::endl;
+      // }
     }
     return 0;
   } else {

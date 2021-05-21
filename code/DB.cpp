@@ -64,6 +64,8 @@ std::string DB::create_table(const hsql::CreateStatement* stmt)
 
         fs.close();
 
+        
+
         std::cout<<"create table successfully";
     }
 

@@ -5,6 +5,10 @@
 #include <sys/types.h>
 #include<vector>
 
+#include "SQLParser.h"
+// contains printing utilities
+#include "util/sqlhelper.h"
+
 using column = std::pair<std::string,int>;
 
 class table
@@ -39,10 +43,14 @@ public:
     //std::string select();
 
     int update();
+
+    void del(const hsql::DeleteStatement* stmt);
     
     void insertWrite(std::vector<std::string> v);
 
-    void load_data_from_file(std::string path,int lineNum);
+    std::vector<std::string> load_one_row_from_data(std::string path);
+
+    std::vector<std::string> load_data_from_file(std::string path,int lineNum);
 
     
 };

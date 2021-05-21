@@ -38,6 +38,16 @@
 makefile中添加了install、uninstall
 root 模式下运行 make install 
 
+######################################################################
+
+在table类下添加del方法，实现删除指定行（但是当前仅实现了OP为=的情况）
+
+main.cpp中已添加del方法的测试 make后运行 /data/student/student.dat中第二行数据将被删除
+
+即helix 40这一行
+
+todo:OP > < 等仍需实现
+
 
 
 

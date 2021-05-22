@@ -103,6 +103,8 @@ std::vector<std::string> table::load_data_from_file(std::string path,int lineNum
 
     int line = 1;
 
+    
+
     while(getline(is,val))
     {
         if(is.eof())
@@ -110,8 +112,12 @@ std::vector<std::string> table::load_data_from_file(std::string path,int lineNum
             std::cout<<"file end"<<std::endl;
             break;
         }
-
-        if(line == lineNum -1)
+        
+        if(lineNum == 1)
+        {
+            row = load_one_row_from_data(path);
+            return row;
+        }else if(line == lineNum - 1)
         {
             for(int i=0;i < column_types.size();++i)
             {
@@ -156,31 +162,33 @@ std::vector<std::string> table::load_one_row_from_data(std::string path)
 
 void table::del(const hsql::DeleteStatement* stmt)
 {
-    std::string tablename = stmt->tableName;
+    std::string tablename = stmt->tableName; //get tablename
 
-    std::string columname = stmt->expr->expr->name;
+    std::string columname = stmt->expr->expr->name; //get the name of colmun gonna be deleted
     
-    std::string columnvalue = stmt->expr->expr2->name;
+    std::string columnvalue = stmt->expr->expr2->name; //get the column value 
 
-    std::string fmtpath = "../data/" + tableName + "/"+tablename+".fmt";
+    std::string fmtpath = "../data/" + tableName + "/"+tablename+".fmt"; // fmt-file's path
 
-    std::string datapath = "../data/" + tablename + "/" + tablename + ".dat";
+    std::string datapath = "../data/" + tablename + "/" + tablename + ".dat"; // data-file's path
     
     int colnum = 0;
 
     int rownum = 0;
 
+    //check if table exist
     if(!File::file_exists(fmtpath))
     {
         std::cout<<"table doesn't exist!\n";
         return ;
     }
 
+    //get column value
     std::vector<std::string> tmp;
-
 
     tmp = load_one_row_from_data(fmtpath);
 
+    //find out the index of the column we gonna use
     for(size_t i = 0;i < column_types.size();++i)
     {
         if(tmp[i] == columname)
@@ -191,7 +199,7 @@ void table::del(const hsql::DeleteStatement* stmt)
 
     }
 
-    int i = 2;
+    int i = 1;
 
     while(true)
     {
@@ -210,7 +218,7 @@ void table::del(const hsql::DeleteStatement* stmt)
 
     int line = 1;
 
-    std::string val1;//a tmp variable;
+    std::string val1; //a tmp variable;
     std::string strinputfile;
 
     while(getline(in,val1))
@@ -225,6 +233,7 @@ void table::del(const hsql::DeleteStatement* stmt)
         }
         line++;
     }
+    
     in.close();
 
     ofstream out;

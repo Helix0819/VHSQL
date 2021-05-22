@@ -26,7 +26,7 @@ public:
 
     std::string select();
 
-    std::string insert();
+    //std::string insert();
     
     std::string update();
 

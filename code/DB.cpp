@@ -15,6 +15,16 @@ std::string DB::create_table(const hsql::CreateStatement* stmt)
     std::vector<int> col_types;
     std::string tablename = stmt->tableName;
 
+    std::string dir = "../data/" + tablename;
+
+    if(File::dir_exists(dir))
+    {
+        std::cout<<"table already exists!"<<std::endl;
+        return "exists";
+    }    
+
+    
+
     for(;it!=stmt->columns->end();++it)
     {
         col_names.push_back((*it)->name);
@@ -42,7 +52,8 @@ std::string DB::create_table(const hsql::CreateStatement* stmt)
         }
     }
 
-    std::string dir = "../data/" + tablename;
+    
+    
     if(File::create_dir(dir))
     {
         auto fs = File::create("../data/" + tablename +"/"+tablename+".fmt");
@@ -66,7 +77,8 @@ std::string DB::create_table(const hsql::CreateStatement* stmt)
 
         
 
-        std::cout<<"create table successfully";
+        std::cout<<"create table successfully"<<std::endl;
+        return "success!\n";
     }
 
 }

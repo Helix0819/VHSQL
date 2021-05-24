@@ -2,3 +2,5 @@ all:
 	g++ main.cpp table.cpp file.cpp DB.cpp DDL.cpp -I include/ -L lib/ -l sqlparser -g -o a -std=c++11
 clean:
 	rm a
+
+gcc-8 -std=c++11 -g -Wall -fsanitize=address $1 -o $2

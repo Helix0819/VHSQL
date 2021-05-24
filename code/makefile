@@ -3,4 +3,3 @@ all:
 clean:
 	rm a
 
-gcc-8 -std=c++11 -g -Wall -fsanitize=address $1 -o $2

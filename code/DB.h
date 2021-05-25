@@ -42,7 +42,9 @@ public:
 
     bool table_exists(std::string tablename);
 
-    std::string drop_table(const hsql::DropStatement* stmt);
+    
+
+    std::string drop_function(const hsql::DropStatement* stmt);
     
     std::string update();
 

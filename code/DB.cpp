@@ -11,8 +11,11 @@ std::string DB::create_table(const hsql::CreateStatement* stmt)
 {
     
     std::vector<hsql::ColumnDefinition*>::iterator it = stmt->columns->begin();
+    
     std::vector<std::string> col_names;
-    std::vector<int> col_types;
+
+    std::vector<std::string> col_types;
+
     std::string tablename = stmt->tableName;
 
     std::string dir = "../data/" + tablename;
@@ -32,22 +35,22 @@ std::string DB::create_table(const hsql::CreateStatement* stmt)
         switch (type)
         {
         case hsql::DataType::UNKNOWN:
-            col_types.push_back(-1);
+            col_types.push_back("unknown");
             continue;
         case hsql::DataType::INT:
-            col_types.push_back(1);
+            col_types.push_back("int");
             continue;
         case hsql::DataType::LONG:
-            col_types.push_back(2);
+            col_types.push_back("long");
             continue;
         case hsql::DataType::FLOAT:
-            col_types.push_back(3);
+            col_types.push_back("float");
             continue;
         case hsql::DataType::DOUBLE:
-            col_types.push_back(4);
+            col_types.push_back("double");
             continue;
         case hsql::DataType::TEXT:
-            col_types.push_back(5);
+            col_types.push_back("text");
             continue;
         }
     }
@@ -56,9 +59,9 @@ std::string DB::create_table(const hsql::CreateStatement* stmt)
     
     if(File::create_dir(dir))
     {
-        auto fs = File::create("../data/" + tablename +"/"+tablename+".fmt");
+        auto fs = File::create("../data/" + tablename +"/"+tablename+".idx");
         if (!fs.good())
-            std::cout << "fs is bad" << std::endl;\
+            std::cout << "fs is bad" << std::endl;
         
         for(auto it = col_names.begin();it!=col_names.end();++it)
         {
@@ -81,4 +84,34 @@ std::string DB::create_table(const hsql::CreateStatement* stmt)
         return "success!\n";
     }
 
+}
+
+bool table_exists(std::string tablename)
+{
+    std::string path = "../data/" + tablename + "/" + tablename + ".idx";
+
+    if(!File::file_exists(path))
+        return false;
+    else
+        return true;
+}
+
+std::string DB::drop_table(const hsql::DropStatement* stmt)
+{
+    if(stmt->type == hsql::kDropTable)
+    {
+        std::string tbname = stmt->name;
+        
+        std::string tbpath_idx = "../data/" + tbname + "/" + tbname + ".idx"; 
+
+        std::string tbpath_dat = "../data/" + tbname + "/" + tbname + ".dat"; 
+
+        remove(tbpath_idx.c_str());
+
+        remove(tbpath_dat.c_str());
+
+        std::cout<<"table deleted!"<<std::endl;
+
+        return "delete table success";
+    }
 }

@@ -59,13 +59,13 @@ public:
     /*******************************select部分********************************/
     //以下四个函数均以是相对稳健的函数,有参数则可直接调用
     //这个函数将用于查找指定列的位置下标
-    void selectPosition(string fileName, string colName, int *colNum);
+    void selectPosition(std::string fileName, std::string colName, int *colNum);
 
     //这个函数将用于查找条件列的对应类型
-    void selectPair(int colNum, string fileName, string *type);
+    void selectPair(int colNum, std::string fileName, std::string *type);
 
     //这个函数将用于返回一个bool容器,容器内每一个元素对应的是逐行表示行是否满足条件
-    vector<bool> selectFilter(int colNum, ifstream &file, string op, string B, string type);
+    std::vector<bool> selectFilter(int colNum, std::ifstream &file, std::string op, std::string B, std::string type);
 
     //这个函数对应的是select语句执行,只需要调用此函数即可,不需要单独调用以上三个函数
     void select(const hsql::SelectStatement *stmt);

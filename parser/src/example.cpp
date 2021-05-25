@@ -30,9 +30,14 @@ int main(int argc, char* argv[]) {
       // Print a statement summary.
       hsql::printStatementInfo(result.getStatement(i));
 
-      auto stmt = (const hsql::DeleteStatement*) result.getStatement(i);
+      // auto stmt = (const hsql::InsertStatement*) result.getStatement(i);
 
-      std::cout<<stmt->expr->expr2->name<<std::endl;
+      // for(hsql::Expr* expr : *stmt->values)
+      // {
+      //   std::cout<<expr->ival;
+      // }
+
+      
       // auto stmt = (const hsql::CreateStatement*) result.getStatement(i);
       // std::string x = stmt->tableName;
       // std::cout<<x<<std::endl;

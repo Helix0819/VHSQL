@@ -11,7 +11,7 @@ namespace hsql {
   // Note: if (expr == nullptr) => delete all rows (truncate)
   struct DeleteStatement : SQLStatement {
     DeleteStatement();
-    ~DeleteStatement() override;
+    virtual ~DeleteStatement();
 
     char* schema;
     char* tableName;

@@ -27,8 +27,7 @@ enum ExprType {
     kExprHint,
     kExprArray,
     kExprArrayIndex,
-    kExprExtract,
-    kExprCast    
+    kExprDatetimeField
 };
 
 // Operator types. These are important for expressions of type kExprOperator.

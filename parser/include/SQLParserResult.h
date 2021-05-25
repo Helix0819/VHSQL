@@ -17,7 +17,6 @@ namespace hsql {
 
     // Move constructor.
     SQLParserResult(SQLParserResult&& moved);
-    SQLParserResult &operator=(SQLParserResult&& moved);
 
     // Deletes all statements in the result.
     virtual ~SQLParserResult();

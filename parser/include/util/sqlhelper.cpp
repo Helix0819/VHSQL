@@ -10,7 +10,6 @@ namespace hsql {
   void printAlias(Alias* alias, uintmax_t numIndent);
 
   std::ostream& operator<<(std::ostream& os, const OperatorType& op);
-  std::ostream& operator<<(std::ostream& os, const DatetimeField& op);
 
   std::string indent(uintmax_t numIndent) {
     return std::string(numIndent, '\t');
@@ -32,12 +31,6 @@ namespace hsql {
   }
   void inprint(const OperatorType& op, uintmax_t numIndent) {
     std::cout << indent(numIndent) << op << std::endl;
-  }
-  void inprint(const ColumnType& colType, uintmax_t numIndent) {
-    std::cout << indent(numIndent) << colType << std::endl;
-  }
-  void inprint(const DatetimeField& colType, uintmax_t numIndent) {
-    std::cout << indent(numIndent) << colType << std::endl;
   }
 
   void printTableRefInfo(TableRef* table, uintmax_t numIndent) {
@@ -125,16 +118,6 @@ namespace hsql {
       inprint(expr->name, numIndent);
       for (Expr* e : *expr->exprList) printExpression(e, numIndent + 1);
       break;
-    case kExprExtract:
-      inprint(expr->name, numIndent);
-      inprint(expr->datetimeField, numIndent + 1);
-      printExpression(expr->expr, numIndent + 1);
-      break;
-    case kExprCast:
-      inprint(expr->name, numIndent);
-      inprint(expr->columnType, numIndent + 1);
-      printExpression(expr->expr, numIndent + 1);
-      break;
     case kExprOperator:
       printOperatorExpression(expr, numIndent);
       break;
@@ -158,19 +141,6 @@ namespace hsql {
     if (expr->alias != nullptr) {
       inprint("Alias", numIndent + 1);
       inprint(expr->alias, numIndent + 2);
-    }
-  }
-
-  void printOrderBy(const std::vector<OrderDescription*>* expr, uintmax_t numIndent) {
-    if (!expr) return;
-    for (const auto& order_description : *expr) {
-      printExpression(order_description->expr, numIndent);
-      if (order_description->type == kOrderAsc) {
-          inprint("ascending", numIndent);
-      }
-      else {
-          inprint("descending", numIndent);
-      }
     }
   }
 
@@ -216,7 +186,9 @@ namespace hsql {
 
         if (setOperation->resultOrder != nullptr) {
           inprint("SetResultOrderBy:", numIndent + 1);
-          printOrderBy(setOperation->resultOrder, numIndent + 2);
+          printExpression(setOperation->resultOrder->at(0)->expr, numIndent + 2);
+          if (setOperation->resultOrder->at(0)->type == kOrderAsc) inprint("ascending", numIndent + 2);
+          else inprint("descending", numIndent + 2);
         }
 
         if (setOperation->resultLimit != nullptr) {
@@ -235,7 +207,9 @@ namespace hsql {
 
     if (stmt->order != nullptr) {
       inprint("OrderBy:", numIndent + 1);
-      printOrderBy(stmt->order, numIndent + 2);
+      printExpression(stmt->order->at(0)->expr, numIndent + 2);
+      if (stmt->order->at(0)->type == kOrderAsc) inprint("ascending", numIndent + 2);
+      else inprint("descending", numIndent + 2);
     }
 
     if (stmt->limit != nullptr && stmt->limit->limit != nullptr) {
@@ -393,25 +367,6 @@ namespace hsql {
     const auto found = operatorToToken.find(op);
     if (found == operatorToToken.cend()) {
       return os << static_cast<uint64_t>(op);
-    } else {
-      return os << (*found).second;
-    }
-  }
-
-  std::ostream& operator<<(std::ostream& os, const DatetimeField& datetime) {
-    static const std::map<const DatetimeField, const std::string> operatorToToken = {
-      {kDatetimeNone, "None"},
-      {kDatetimeSecond, "SECOND"},
-      {kDatetimeMinute, "MINUTE"},
-      {kDatetimeHour, "HOUR"},
-      {kDatetimeDay, "DAY"},
-      {kDatetimeMonth, "MONTH"},
-      {kDatetimeYear, "YEAR"}
-    };
-
-    const auto found = operatorToToken.find(datetime);
-    if (found == operatorToToken.cend()) {
-      return os << static_cast<uint64_t>(datetime);
     } else {
       return os << (*found).second;
     }

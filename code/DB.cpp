@@ -6,6 +6,19 @@
 
 #include "file.h"
 
+std::string DB::createDB(const hsql::CreateStatement* stmt)
+{
+    std::string db = stmt->tableName;
+    std::string path = "../data/" + db;
+    if(access(path.c_str(),F_OK) == 0)
+    {
+        cout << "DataBase has already exists" << endl;
+        // cout << "Database exists" << endl;
+    }else{
+        mkdir(path.c_str(),S_IRUSR | S_IWUSR | S_IXUSR | S_IRWXG | S_IRWXO);
+    }
+}
+
 
 std::string DB::create_table(const hsql::CreateStatement* stmt)
 {

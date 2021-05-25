@@ -1,66 +1,82 @@
 
 #include "table.h"
 //#include "SQLParser.h"
-#include "DDL.h"
 
 #include "file.h"
 #include <vector>
 
 using namespace std;
 
-void table::insert(vector<string> insertdata)
-{
-    string s;
-    char c;
-    vector<string>::iterator it = insertdata.begin();
-    string::iterator is;
-
-    vector<int> vg;
-
-    while (it != insertdata.end())
+//__________________________________WARNING________________________________
+//insert只对插入的数据进行检查,然后调用的是insertWrite进行写入
+void table::insert(const hsql::InsertStatement* stmt)
+{   
+    //想打开对应的索引表,并获取存放类型的容器,用0代表string,用1代表int
+    ifstream fileIdx(database + '/' + tableName + ".idx", ios::app);
+    //创建一个索引类型容器
+    vector<int> idx;
+    string line;
+    string type;
+    while (getline(fileIdx, line))
     {
-        s = *it;
-        for (is = s.begin(); is != s.end(); is++)
-        {
-            c = *is;
-            if (isdigit(c) != 0)
-            {
-                //c是数字
-                // cout << isdigit(c) << endl;
-                continue;
-            }
-            else
-            {
-                //字符
-                // cout << isdigit(c) << endl;
-                break;
-            }
-        }
-        if (is == s.end())
-        {
-            //c是数字
-            vg.push_back(1);
-        }
-        else
-        {
-            //是字符
-            vg.push_back(0);
-        }
-        it++;
     }
-
-    for (int i = 0; i < column_types.size(); ++i)
+    std::stringstream word(line);
+    // cout << word.str() << endl;
+    while (word.rdbuf() -> in_avail() != 0)
     {
-        if (column_types[i].second != vg[i])
-        {
-            cout << "非法" << endl;
-            return;
+        word >> type;
+        // cout << type << endl;
+        if(type == "string"){
+            idx.push_back(0);
+        }else if(type == "int"){
+            idx.push_back(1);
         }
+        word.clear();
     }
+    fileIdx.close();
+    //得到了索引容器
 
-    cout << "合法" << endl;
-    insertWrite(insertdata);
+    vector<hsql::Expr*> *v = stmt->values;
+    vector<hsql::Expr*>::iterator it = v->begin();
+    vector<int>::iterator itIdx =  idx.begin();
+    // 需要存放的数据
+    string str;
+    vector<string> insertData;
+    // std::vector<Expr*>::iterator it = stmt->values->begin();
+    if(v->size() != idx.size()){
+        cout << "非法插入" << endl;
+        return;
+    }
+    //new way使用for循环遍历结果集
+    for(hsql::Expr* expr : *stmt->values)
+    {
+        if(*itIdx == 0){
+            // A STRING TYPE
+            /*_________________WARNING__________________________*/
+            if(expr->name == nullptr){
+                cout << "非法插入" << endl;
+                return;
+            }else{
+                str = expr->name;
+                insertData.push_back(str);
+            }
+        }else if(*itIdx == 1){
+            // A int TYPE
+            /*_________________WARNING__________________________*/
+            if(expr->ival == 0){
+                cout << "非法插入" << endl;
+                return;
+            }else{
+                str = to_string(expr->ival);
+                insertData.push_back(str);
+            }
+        }
+        itIdx++;
+    }
+    //检查完毕,开始插入
+    insertWrite(insertData);
 }
+//__________________________________WARNING________________________________
 
 void table::insertWrite(vector<string> v)
 {
@@ -161,7 +177,7 @@ void table::del(const hsql::DeleteStatement *stmt)
     std::string columnvalue = stmt->expr->expr2->name; //get the column value
 
     //我在这里修改过tableName-->tablename
-    std::string fmtpath = "../data/" + tablename + "/" + tablename + ".fmt"; // fmt-file's path
+    std::string fmtpath = "../data/" + tablename + "/" + tablename + ".idx"; // fmt-file's path
 
     std::string datapath = "../data/" + tablename + "/" + tablename + ".dat"; // data-file's path
 
@@ -238,46 +254,12 @@ void table::del(const hsql::DeleteStatement *stmt)
     //std::cout<<"delete row "<<rownum<<std::endl;
 }
 
-// void table::selectValue(const hsql::SelectStatement *stmt){
-//     //这里我尝试获取表名
-//     string fileName = (char*)stmt->fromTable->name;
-//     //我将会拿到对应的表名以及表结构的路径
-//     string fmtpath = "../data/" + fileName + "/" + fileName + ".fmt";
-//     string datpath = "../data/" + fileName + "/" + fileName + ".dat";
-//     //这里我尝试获得where子句
-//     //先拿到A
-//     string A = (char*)stmt->whereClause->expr->name;
-//     //再拿到op
-//     string op;
-//     hsql::OperatorType o = stmt->whereClause->opType;
-//     switch (o)
-//     {
-//     case hsql::OperatorType::kOpEquals:
-//         op = "=";
-//         break;
-//     case hsql::OperatorType::kOpLess:
-//         op = "<";
-//         break;
-//     case hsql::OperatorType::kOpGreater:
-//         op = ">";
-//         break;
-//     default:
-//         break;
-//     }
-//     //再拿B
-//     //首先我要先由A知道B的类型
-//     // selectPosition(fileName, colName, int *colNum);
-//     // if(stmt->whereClause->expr2->ival == nullptr)
-//     // enum op = stmt->whereClause->opType;
-// }
-
-
-void table::selectPosition(string fileName, string colName, int *colNum)
+void table::selectPosition(string colName, int *colNum)
 {
     string line;
     string oneData;
     string jump;
-    ifstream fileIdx(fileName + ".fmt", ios::app);
+    ifstream fileIdx(database + '/' + tableName + ".idx", ios::app);
     getline(fileIdx, line);
     std::stringstream word(line);
     //找到索引列位置
@@ -300,9 +282,9 @@ void table::selectPosition(string fileName, string colName, int *colNum)
 }
 
 //设置一个函数用于判别条件类型
-void table::selectPair(int colNum, string fileName, string *type)
+void table::selectPair(int colNum, string *type)
 {
-    ifstream fileIdx(fileName + ".fmt", ios::app);
+    ifstream fileIdx(database + '/' + tableName + ".idx", ios::app);
     string line;
     while (getline(fileIdx, line))
     {
@@ -395,9 +377,7 @@ vector<bool> table::selectFilter(int colNum, ifstream &file, string op, string B
 void table::select(const hsql::SelectStatement *stmt)
 {
     //接下来是修改部分,由于我调用了select状态,所以,我将会让fileName,colName和cond都从中间提取
-    string fn = (char*)stmt->fromTable->name;
-    //我将会拿到对应的表名以及表结构的路径的基础路径(就是不加文件后缀名如.dat的路径)
-    string fileName = "../data/" + fn + "/" + fn;
+    //在table进行实例化的时候我们已经拿到了对应表的基础路径
     //接下来获取的是colName
     string colName = (char*)stmt->selectList->at(0)->getName();
     //定义一个用于读取一行数据的string变量
@@ -411,7 +391,7 @@ void table::select(const hsql::SelectStatement *stmt)
     //定义一个用放一行数据的vector容器
     vector<string> lineData;
     //打开一个需要进行select的文件
-    ifstream file(fileName + ".dat", ios::app);
+    ifstream file(database + '/' + tableName + ".dat", ios::app);
     //创造用于解析cond的变量三个
     string A;
     string op;
@@ -425,9 +405,9 @@ void table::select(const hsql::SelectStatement *stmt)
         //拿到A
         A = (char*)stmt->whereClause->expr->name;
         //找到条件列的位置
-        selectPosition(fileName, A, &condColNum);
+        selectPosition(A, &condColNum);
         //找到条件列类型,放到type中
-        selectPair(condColNum, fileName, &type);
+        selectPair(condColNum, &type);
         //拿到op
         hsql::OperatorType o = stmt->whereClause->opType;
         switch (o)
@@ -461,7 +441,7 @@ void table::select(const hsql::SelectStatement *stmt)
         file.clear();
         file.seekg(ios::beg);
         //先得到列的对应位号
-        selectPosition(fileName, colName, &colNum);
+        selectPosition(colName, &colNum);
         if (colNum == 0)
         {
             return;

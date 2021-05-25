@@ -9,7 +9,7 @@ $(error Bison version $(BISON_VERSION) not supported. If you are using OS X, `bi
 endif
 
 FLEX_VERSION=$(shell $(FLEX) --version | head -n 1 | grep -o '[0-9]\.[0-9]\+')
-FLEX_VERSION_SUPPORTED=$(shell awk -v a=$(FLEX_VERSION) -v b="2.6" 'BEGIN { print (a >= b) ? 1 : 0 }')
+FLEX_VERSION_SUPPORTED=$(shell awk -v a=$(FLEX_VERSION) -v b="2.5" 'BEGIN { print (a >= b) ? 1 : 0 }')
 ifneq ($(FLEX_VERSION_SUPPORTED), 1)
 $(error Flex version $(FLEX_VERSION) not supported. If you are using OS X, `flex` uses the system default instead of the brew version. Run FLEX=/usr/local/opt/flex/bin/flex make)
 endif

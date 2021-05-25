@@ -8,7 +8,8 @@ namespace hsql {
 
   enum ShowType {
     kShowColumns,
-    kShowTables
+    kShowTables,
+    kShowDatabases,
   };
 
   // Represents SQL SHOW statements.
@@ -16,7 +17,7 @@ namespace hsql {
   struct ShowStatement : SQLStatement {
 
     ShowStatement(ShowType type);
-    ~ShowStatement() override;
+    virtual ~ShowStatement();
 
     ShowType type;
     char* schema;

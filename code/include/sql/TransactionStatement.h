@@ -15,7 +15,7 @@ namespace hsql {
 
   struct TransactionStatement : SQLStatement {
     TransactionStatement(TransactionCommand command);
-    ~TransactionStatement() override;
+    virtual ~TransactionStatement();
 
     TransactionCommand command;
   };

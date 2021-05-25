@@ -67,7 +67,7 @@ namespace hsql {
   // Representation of a full SQL select statement.
   struct SelectStatement : SQLStatement {
     SelectStatement();
-    ~SelectStatement() override;
+    virtual ~SelectStatement();
 
     TableRef* fromTable;
     bool selectDistinct;

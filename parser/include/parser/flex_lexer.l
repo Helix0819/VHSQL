@@ -12,7 +12,6 @@
 
 #include "../sql/Expr.h"
 #include "bison_parser.h"
-#include <climits>
 #include <stdio.h>
 #include <sstream>
 
@@ -198,6 +197,8 @@ TRANSACTION TOKEN(TRANSACTION)
 BEGIN       TOKEN(BEGIN)
 ROLLBACK    TOKEN(ROLLBACK)
 COMMIT      TOKEN(COMMIT)
+DATABASE	TOKEN(DATABASE)
+DATABASES	TOKEN(DATABASES)
 
                 /* Allow =/== see https://sqlite.org/lang_expr.html#collateop */
 "=="		TOKEN(EQUALS)
@@ -209,29 +210,14 @@ COMMIT      TOKEN(COMMIT)
 
 [-+*/(){},.;<>=^%:?[\]|]	{ return yytext[0]; }
 
-[0-9]+"."[0-9]* |
+-?[0-9]+"."[0-9]* |
 "."[0-9]*	{
 	yylval->fval = atof(yytext);
 	return SQL_FLOATVAL;
 }
 
-	/* 
-	 * Regularly, negative literals are treated as <unary minus> <positive literal>. This does not work for LLONG_MIN, as it has no 
-	 * positive equivalent. We thus match for LLONG_MIN specifically. This is not an issue for floats, where
-	 *   numeric_limits<double>::lowest() == -numeric_limits<double>::max();
-	 */
--9223372036854775808 {
-	yylval->ival = LLONG_MIN;
-	return SQL_INTVAL;
-}
-
-[0-9]+ {
-	errno = 0;
-	yylval->ival = strtoll(yytext, nullptr, 0);
-	if (errno) {
-		return fprintf(stderr, "[SQL-Lexer-Error] Integer cannot be parsed - is it out of range?");
-		return 0;
-	}
+-?[0-9]+	{
+	yylval->ival = atol(yytext);
 	return SQL_INTVAL;
 }
 
@@ -246,7 +232,7 @@ COMMIT      TOKEN(COMMIT)
 	return SQL_IDENTIFIER;
 }
 
-\'                          { BEGIN singlequotedstring; strbuf.clear(); strbuf.str(""); }  // Clear strbuf manually, see #170
+\'                          { BEGIN singlequotedstring; strbuf = std::stringstream{}; }
 <singlequotedstring>\'\'    { strbuf << '\''; }
 <singlequotedstring>[^']*   { strbuf << yytext; }
 <singlequotedstring>\'      { BEGIN 0; yylval->sval = strdup(strbuf.str().c_str()); return SQL_STRING; }

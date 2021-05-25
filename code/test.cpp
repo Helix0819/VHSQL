@@ -23,6 +23,6 @@ int main()
     for (auto i = 0u; i < result.size(); ++i)
     {
         auto stmt = (const hsql::CreateStatement*) result.getStatement(i);
-        cout << stmt->tableName << endl;
+        cout << stmt->schema << endl;
     }
 }

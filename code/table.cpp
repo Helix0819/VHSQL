@@ -78,11 +78,11 @@ void table::insert(const hsql::InsertStatement* stmt)
 }
 //__________________________________WARNING________________________________
 
-void table::insertWrite(vector<string> v)
+void table::insertWrite(std::vector<std::string> v)
 {
     fstream file(database + '/' + tableName + ".dat", ios::app | ios::binary);
-    string s;
-    vector<string>::iterator it = v.begin();
+    std::string s;
+    std::vector<std::string>::iterator it = v.begin();
     while (it != v.end())
     {
         s = *it;
@@ -140,7 +140,7 @@ std::vector<std::string> table::load_data_from_file(std::string path, int lineNu
     //is.eof();
 
     return row;
-    // vector<string>::iterator it = row.begin();
+    // std::vector<std::string>::iterator it = row.begin();
 
     // for(;it != row.end();++it)
     // {
@@ -245,7 +245,7 @@ void table::del(const hsql::DeleteStatement *stmt)
 
     in.close();
 
-    ofstream out;
+    std::ofstream out;
     out.open(datapath);
     out.flush();
     out << strinputfile;
@@ -286,6 +286,7 @@ void table::selectPair(int colNum, string *type)
 {
     ifstream fileIdx(database + '/' + tableName + ".idx", ios::app);
     string line;
+
     while (getline(fileIdx, line))
     {
     }
@@ -299,12 +300,12 @@ void table::selectPair(int colNum, string *type)
 }
 
 //设置一个函数用于判断
-vector<bool> table::selectFilter(int colNum, ifstream &file, string op, string B, string type)
+std::vector<bool> table::selectFilter(int colNum, std::ifstream &file, std::string op, std::string B, std::string type)
 {
-    string line;
-    string oneData;
-    vector<bool> judge;
-    vector<string> lineData;
+    std::string line;
+    std::string oneData;
+    std::vector<bool> judge;
+    std::vector<std::string> lineData;
     while (getline(file, line))
     {
         std::stringstream word(line);
@@ -315,9 +316,9 @@ vector<bool> table::selectFilter(int colNum, ifstream &file, string op, string B
             lineData.push_back(oneData);
             temp--;
         }
-        //此时用于判断的值将会放在vector的末尾在一个循环中
+        //此时用于判断的值将会放在std::vector的末尾在一个循环中
         oneData = *(--lineData.end());
-        //将会在vector容器的末尾进行判断是否满足条件
+        //将会在std::vector容器的末尾进行判断是否满足条件
         if (type == "int")
         {
             char c = *op.begin();
@@ -379,27 +380,29 @@ void table::select(const hsql::SelectStatement *stmt)
     //接下来是修改部分,由于我调用了select状态,所以,我将会让fileName,colName和cond都从中间提取
     //在table进行实例化的时候我们已经拿到了对应表的基础路径
     //接下来获取的是colName
-    string colName = (char*)stmt->selectList->at(0)->getName();
-    //定义一个用于读取一行数据的string变量
-    string line;
+    std::string colName = (char*)stmt->selectList->at(0)->getName();
+    //定义一个用于读取一行数据的std::string变量
+    std::string line;
     //定义一个int用于指定指定列所在的位置
     int colNum = 0;
     int condColNum = 0;
-    //定义一个用于获得单一字段的string
-    string oneData;
-    string jump;
-    //定义一个用放一行数据的vector容器
-    vector<string> lineData;
+    //定义一个用于获得单一字段的std::string
+    std::string oneData;
+    std::string jump;
+    //定义一个用放一行数据的std::vector容器
+    std::vector<std::string> lineData;
     //打开一个需要进行select的文件
+
     ifstream file(database + '/' + tableName + ".dat", ios::app);
+
     //创造用于解析cond的变量三个
-    string A;
-    string op;
-    string B;
+    std::string A;
+    std::string op;
+    std::string B;
     //定义索引行的类型
-    string type;
+    std::string type;
     //先创造一个用于判断的布尔容器
-    vector<bool> judge;
+    std::vector<bool> judge;
     /**************尝试在这儿用新的方法获取到A op B************************/
     if(stmt->whereClause->expr->name != nullptr){
         //拿到A
@@ -427,14 +430,14 @@ void table::select(const hsql::SelectStatement *stmt)
         //拿到B
         if(type == "int"){
             B = to_string(stmt->whereClause->expr2->ival);
-        }else if(type == "string"){
+        }else if(type == "std::string"){
             B = stmt->whereClause->expr2->name;
         }
         judge = selectFilter(condColNum, file, op, B, type);
     }
     /**************************end**************************************/
 
-    vector<bool>::iterator itb = judge.begin();
+    std::vector<bool>::iterator itb = judge.begin();
     if (colName != "*")
     {
         //进行文件指针的重置
@@ -446,7 +449,7 @@ void table::select(const hsql::SelectStatement *stmt)
         {
             return;
         }
-        //逐行读取,将读取的行数据放入一个vector中,使用迭代器遍历到相应的位置并取出,不加条件
+        //逐行读取,将读取的行数据放入一个std::vector中,使用迭代器遍历到相应的位置并取出,不加条件
         while (getline(file, line))
         {
             std::stringstream word(line);

@@ -11,7 +11,8 @@ namespace hsql {
     kDropSchema,
     kDropIndex,
     kDropView,
-    kDropPreparedStatement
+    kDropPreparedStatement,
+    kDropDatabase
   };
 
   // Represents SQL Delete statements.
@@ -19,7 +20,7 @@ namespace hsql {
   struct DropStatement : SQLStatement {
 
     DropStatement(DropType type);
-    ~DropStatement() override;
+    virtual ~DropStatement();
 
     DropType type;
     bool ifExists;

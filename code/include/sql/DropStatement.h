@@ -11,6 +11,7 @@ namespace hsql {
     kDropSchema,
     kDropIndex,
     kDropView,
+    kDropDatabase,
     kDropPreparedStatement
   };
 
@@ -19,7 +20,7 @@ namespace hsql {
   struct DropStatement : SQLStatement {
 
     DropStatement(DropType type);
-    ~DropStatement() override;
+    virtual ~DropStatement();
 
     DropType type;
     bool ifExists;

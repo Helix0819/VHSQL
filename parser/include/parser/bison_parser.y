@@ -183,7 +183,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %token ARRAY CONCAT ILIKE SECOND MINUTE HOUR DAY MONTH YEAR
 %token TRUE FALSE
 %token TRANSACTION BEGIN COMMIT ROLLBACK
-
+%token DATABASE DATABASES
 /*********************************
  ** Non-Terminal types (http://www.gnu.org/software/bison/manual/html_node/Type-Decl.html)
  *********************************/
@@ -203,7 +203,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <show_stmt>	    show_statement
 %type <table_name>      table_name
 %type <sval> 		    file_path prepare_target_query
-%type <bval> 		    opt_not_exists opt_exists opt_distinct opt_column_nullable opt_all
+%type <bval> 		    opt_not_exists opt_exists opt_distinct opt_column_nullable opt_all opt_unique opt_primary
 %type <uval>		    opt_join_type
 %type <table> 		    opt_from_clause from_clause table_ref table_ref_atomic table_ref_name nonjoin_table_ref_atomic
 %type <table>		    join_clause table_ref_name_no_alias
@@ -227,7 +227,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 // ImportType is used for compatibility reasons
 %type <import_type_t>	opt_file_type file_type
 
-%type <str_vec>			ident_commalist opt_column_list
+%type <str_vec>			ident_commalist opt_column_list key_columns
 %type <expr_vec> 		expr_list select_list opt_literal_list literal_list hint_list opt_hints
 %type <table_vec> 		table_ref_commalist
 %type <order_vec>		opt_order order_list
@@ -490,6 +490,9 @@ show_statement:
 			$$->schema = $2.schema;
 			$$->name = $2.name;
 		}
+	|	SHOW DATABASES{
+		$$ = new ShowStatement(kShowDatabases);
+	}
 	;
 
 
@@ -534,6 +537,10 @@ create_statement:
 			$$->viewColumns = $5;
 			$$->select = $7;
 		}
+	|	CREATE DATABASE  IDENTIFIER {
+		$$ = new CreateStatement(kCreateDatabase);
+		$$->schema = $3;
+		}
 	;
 
 opt_not_exists:
@@ -547,9 +554,23 @@ column_def_commalist:
 	;
 
 column_def:
-		IDENTIFIER column_type opt_column_nullable {
-			$$ = new ColumnDefinition($1, $2, $3);
+		IDENTIFIER column_type opt_column_nullable {$$ = new ColumnDefinition($1, $2, $3);}
+	|	opt_unique KEY IDENTIFIER '(' key_columns ')' {
+			$$ = new ColumnDefinition($3, DataType::UNKNOWN, false);
+			$$->iskey=true;
+			$$->isuniquekey=$1;
+			$$->keyColumns=$5;
+			/*printf("keyname=%s\n",$3);*/
 		}
+	|	opt_primary KEY  '(' key_columns ')' {
+		    char *name=new char[10];
+			memset(name,0,10);
+			$$ = new ColumnDefinition(name, DataType::UNKNOWN, false);
+			$$->iskey=true;
+			$$->isprivakey=$1;
+			$$->keyColumns=$4;
+			printf("isprivakey=%d\n",$1);
+		}	
 	;
 
 column_type:
@@ -562,13 +583,24 @@ column_type:
 	|	CHAR '(' INTVAL ')' { $$ = ColumnType{DataType::CHAR, $3}; }
 	|	TEXT { $$ = ColumnType{DataType::TEXT}; }
 	|	DATETIME { $$ = ColumnType{DataType::DATETIME}; }
-	|	DATE { $$ = ColumnType{DataType::DATE}; }
 	;
 
 opt_column_nullable:
 		NULL { $$ = true; }
 	|	NOT NULL { $$ = false; }
 	|	/* empty */ { $$ = false; }
+	;
+
+opt_unique:
+    	UNIQUE {$$ = true;}
+	|	/* empty */ { $$ = false; }
+	;
+opt_primary:
+    	PRIMARY {$$ = true;}
+	;
+key_columns:
+    	IDENTIFIER { $$ = new std::vector<char*>(); $$->push_back($1); }
+	|	key_columns ',' IDENTIFIER { $1->push_back($3); $$ = $1; }
 	;
 
 /******************************
@@ -595,6 +627,10 @@ drop_statement:
 			$$->ifExists = false;
 			$$->name = $3;
 		}
+	|	DROP DATABASE IDENTIFIER {
+		$$ = new DropStatement(kDropDatabase);
+		$$->name = $3;
+		}	
 	;
 
 opt_exists:

@@ -41,22 +41,22 @@ int main()
 // //     vs.push_back(0);
 // //     vs.push_back(1);
 
-    vector<column> t;
-    column name("name",0);
-    column age("age",1);
+    // vector<column> t;
+    // column name("name",0);
+    // column age("age",1);
 
-    t.push_back(name);
-    t.push_back(age);
+    // t.push_back(name);
+    // t.push_back(age);
 
-    string dbPath;
+    // string dbPath;
 
-    useDb u("student");
-    dbPath = u.useFolder();
-    cout << dbPath << endl;
-    string s = "student";
+    // useDb u("student");
+    // dbPath = u.useFolder();
+    // cout << dbPath << endl;
+    // string s = "student";
     
-    std::string datafile =dbPath+"/student.dat";
-    table student(s,dbPath,t);
+    // std::string datafile =dbPath+"/student.dat";
+    // table student(s,dbPath,t);
 
     // student.insert(v);
     // student.insert(v2);
@@ -69,11 +69,11 @@ int main()
 //####################################
 //delete test
 
-    std::string delsql = "delete from student where name = eilliot;";
-    hsql::SQLParserResult result;
-    hsql::SQLParser::parse(delsql,&result);
-    auto stmt = (const hsql::DeleteStatement*) result.getStatement(0);
-    student.del(stmt);
+    // std::string delsql = "delete from student where name = eilliot;";
+    // hsql::SQLParserResult result;
+    // hsql::SQLParser::parse(delsql,&result);
+    // auto stmt = (const hsql::DeleteStatement*) result.getStatement(0);
+    // student.del(stmt);
 //delete test end
 //####################################
 
@@ -88,4 +88,14 @@ int main()
     // d1.create_table(stmt);
 //create table test end
 //#####################################
+
+//#####################################
+//drop table test
+    std::string sql = "drop table test;";
+    hsql::SQLParserResult result;
+    hsql::SQLParser::parse(sql,&result);
+    auto stmt = (const hsql::DropStatement*) result.getStatement(0);
+    
+    DB test("test");
+    test.drop_table(stmt);
 }

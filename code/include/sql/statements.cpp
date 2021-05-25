@@ -6,7 +6,8 @@ namespace hsql {
   ColumnDefinition::ColumnDefinition(char* name, ColumnType type, bool nullable) :
     name(name),
     type(type),
-    nullable(nullable) {};
+    nullable(nullable),
+    iskey(false),isuniquekey(false),isprivakey(false),keyColumns(NULL) {};
 
   ColumnDefinition::~ColumnDefinition() {
     free(name);
@@ -56,9 +57,6 @@ namespace hsql {
         break;
       case DataType::DATETIME:
         stream << "DATETIME";
-        break;
-      case DataType::DATE:
-        stream << "DATE";
         break;
     }
     return stream;

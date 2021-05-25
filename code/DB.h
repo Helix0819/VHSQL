@@ -31,7 +31,7 @@ public:
     }
 
     //创建数据库
-    std::string createDB();
+    void createDB();
 
     std::string create_table(const hsql::CreateStatement* stmt);
 

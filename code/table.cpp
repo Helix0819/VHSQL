@@ -380,7 +380,12 @@ void table::select(const hsql::SelectStatement *stmt)
     //接下来是修改部分,由于我调用了select状态,所以,我将会让fileName,colName和cond都从中间提取
     //在table进行实例化的时候我们已经拿到了对应表的基础路径
     //接下来获取的是colName
-    std::string colName = (char*)stmt->selectList->at(0)->getName();
+    std::string colName;
+    if(stmt->selectList->at(0)->type != hsql::kExprStar){
+        colName = (char*)stmt->selectList->at(0)->getName();
+    }else{
+        colName = "*";
+    }
     //定义一个用于读取一行数据的std::string变量
     std::string line;
     //定义一个int用于指定指定列所在的位置
@@ -404,7 +409,7 @@ void table::select(const hsql::SelectStatement *stmt)
     //先创造一个用于判断的布尔容器
     std::vector<bool> judge;
     /**************尝试在这儿用新的方法获取到A op B************************/
-    if(stmt->whereClause->expr->name != nullptr){
+    if(stmt->whereClause != nullptr){
         //拿到A
         A = (char*)stmt->whereClause->expr->name;
         //找到条件列的位置

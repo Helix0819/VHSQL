@@ -51,6 +51,12 @@ public:
     int update();
 
     void del(const hsql::DeleteStatement* stmt);
+
+    void rewrite_file(std::vector<int> &rownums,std::string path);
+
+    int get_table_colnums(std::string path);
+
+    
     
     
 

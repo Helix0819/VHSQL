@@ -109,7 +109,7 @@ bool table_exists(std::string tablename)
         return true;
 }
 
-std::string DB::drop_table(const hsql::DropStatement* stmt)
+std::string DB::drop_function(const hsql::DropStatement* stmt)
 {
     if(stmt->type == hsql::kDropTable)
     {
@@ -119,12 +119,23 @@ std::string DB::drop_table(const hsql::DropStatement* stmt)
 
         std::string tbpath_dat = "../data/" + tbname + "/" + tbname + ".dat"; 
 
-        remove(tbpath_idx.c_str());
+        File::rm_file(tbpath_idx);
 
-        remove(tbpath_dat.c_str());
+        File::rm_file(tbpath_dat);
 
         std::cout<<"table deleted!"<<std::endl;
 
         return "delete table success";
+    }else if(stmt->type == hsql::kDropDatabase)
+    {
+        std::string databasename = stmt->name;
+
+        std::string path = "../data/" + databasename;
+
+        File::rm_dir(path);
+        
+        std::cout<<"database deleted!"<<std::endl;
+
+        return "database delete success";
     }
 }

@@ -12,7 +12,7 @@ using namespace std;
 void table::insert(const hsql::InsertStatement* stmt)
 {   
     //想打开对应的索引表,并获取存放类型的容器,用0代表string,用1代表int
-    ifstream fileIdx(database + '/' + tableName + ".idx", ios::app);
+    std::ifstream fileIdx(database + '/' + tableName + ".idx", ios::app);
     //创建一个索引类型容器
     vector<int> idx;
     string line;
@@ -254,12 +254,12 @@ void table::del(const hsql::DeleteStatement *stmt)
     //std::cout<<"delete row "<<rownum<<std::endl;
 }
 
-void table::selectPosition(string colName, int *colNum)
+void table::selectPosition(std::string colName, int *colNum)
 {
     string line;
     string oneData;
     string jump;
-    ifstream fileIdx(database + '/' + tableName + ".idx", ios::app);
+    std::ifstream fileIdx(database + '/' + tableName + ".idx", ios::app);
     getline(fileIdx, line);
     std::stringstream word(line);
     //找到索引列位置
@@ -282,9 +282,9 @@ void table::selectPosition(string colName, int *colNum)
 }
 
 //设置一个函数用于判别条件类型
-void table::selectPair(int colNum, string *type)
+void table::selectPair(int colNum, std::string *type)
 {
-    ifstream fileIdx(database + '/' + tableName + ".idx", ios::app);
+    std::ifstream fileIdx(database + '/' + tableName + ".idx", ios::app);
     string line;
 
     while (getline(fileIdx, line))
@@ -380,7 +380,12 @@ void table::select(const hsql::SelectStatement *stmt)
     //接下来是修改部分,由于我调用了select状态,所以,我将会让fileName,colName和cond都从中间提取
     //在table进行实例化的时候我们已经拿到了对应表的基础路径
     //接下来获取的是colName
-    std::string colName = (char*)stmt->selectList->at(0)->getName();
+    std::string colName;
+    if(stmt->selectList->at(0)->type != hsql::kExprStar){
+        colName = (char*)stmt->selectList->at(0)->getName();
+    }else{
+        colName = "*";
+    }
     //定义一个用于读取一行数据的std::string变量
     std::string line;
     //定义一个int用于指定指定列所在的位置
@@ -393,7 +398,7 @@ void table::select(const hsql::SelectStatement *stmt)
     std::vector<std::string> lineData;
     //打开一个需要进行select的文件
 
-    ifstream file(database + '/' + tableName + ".dat", ios::app);
+    std::ifstream file(database + '/' + tableName + ".dat", ios::app);
 
     //创造用于解析cond的变量三个
     std::string A;
@@ -404,7 +409,7 @@ void table::select(const hsql::SelectStatement *stmt)
     //先创造一个用于判断的布尔容器
     std::vector<bool> judge;
     /**************尝试在这儿用新的方法获取到A op B************************/
-    if(stmt->whereClause->expr->name != nullptr){
+    if(stmt->whereClause != nullptr){
         //拿到A
         A = (char*)stmt->whereClause->expr->name;
         //找到条件列的位置

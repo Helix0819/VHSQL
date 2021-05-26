@@ -6,7 +6,7 @@
 
 #include "file.h"
 
-std::string DB::createDB()
+void DB::createDB()
 {
     // std::string db = stmt->tableName;
     std::string path = "../data/" + dbName;

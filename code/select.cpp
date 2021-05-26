@@ -3,10 +3,10 @@
 #include<iostream>
 
 // include the sql parser
-#include "./include/SQLParser.h"
+#include "SQLParser.h"
 
 // contains printing utilities
-#include "./include/util/sqlhelper.h"
+#include "util/sqlhelper.h"
 
 int main()
 {
@@ -14,15 +14,12 @@ int main()
 
     std::string testsql_02 = "select a,b from student where name = jack;";
 
-    std::string test3 = "INSERT INTO students VALUES ('Max', 1112233, 'Musterhausen', 2.3)";
-
     
     hsql::SQLParserResult result; //存放我们解析的结果
-    hsql::SQLParser::parse(test3, &result);//parser()是执行解析的方法,在解析结束后我们结果存在result里
-
+    hsql::SQLParser::parse(testsql_01, &result);//parser()是执行解析的方法,在解析结束后我们结果存在result里
 
     //下面用循环是因为parser支持多个sql同时解析，所以可能会有多个解析结果在result中 所以要遍历
-    for (auto i = 0u; i < result.size(); ++i)
+    for (auto i = 0u; i < result.size(); ++i) 
     {
         auto stmt = (const hsql::SQLStatement*) result.getStatement(i);
         //result.getStatement(i)是解析的结果 我们要把它强制类型转换成(const SQLStatement*)才能知道它解析的是什么type的语句
@@ -91,13 +88,13 @@ int main()
         //SelectStatement中有这样一个成员std::vector<Expr*>* selectList;
         //如其名存储了被选中的列
         //它的运行逻辑大概是：
-        for (hsql::Expr* expr : *stmt->selectList)
+        for (Expr* expr : *stmt->selectList)
         {
             switch(expr->type)
             {
-                case hsql::kExprStar:
+                case kExprStar:
                     //说明是* 所以后面的不检索也罢
-                case hsql::kExprColumnRef:
+                case kExprColumnRef:
                     expr->name;//是被选列的名字 类型是char*
                 //当然还有特别多的case 但我不知道你有没有实现 比如order by之类的
                 //相当复杂QAQ

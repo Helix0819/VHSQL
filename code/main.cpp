@@ -1,7 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <sys/stat.h>
-#include <sys/types.h> 
+#include <sys/types.h>
 #include <string>
 #include <vector>
 #include <list>
@@ -16,86 +16,162 @@
 // contains printing utilities
 #include "util/sqlhelper.h"
 
-
 using namespace std;
 //using column = std::pair<std::string,int>;
 
+void othersql(string *DBName, string sqlWord)
+{
+    stringstream read(sqlWord);
+    string word;
+    string path;
+    vector<string> other;
+
+    while (read.rdbuf()->in_avail() != 0)
+    {
+        read >> word;
+        other.push_back(word);
+    }
+    if (other.size() == 1 && *other.begin() == "exit")
+    {
+        exit(0);
+    }
+    if (other.size() == 2)
+    {
+    }
+    else
+    {
+        cout << "I DO NOT UNDERSTAND" << endl;
+        return;
+    }
+    if (*other.begin() == "use")
+    {
+    }
+    else
+    {
+        cout << "I DO NOT UNDERSTAND" << endl;
+        return;
+    }
+    path = "../data/" + *(--other.end());
+    if (access(path.c_str(), F_OK) == 0)
+    {
+        *DBName = *(--other.end());
+    }
+    else
+    {
+        cout << "DataBase not found" << endl;
+        return;
+    }
+}
+
 int main()
 {
-//##############################
-//insert test
-    
-    // vector<string> v;
-    // v.push_back("张皓宇");
-    // v.push_back("22");
-    // vector<string> v2;
-    // v2.push_back("23");
-    // v2.push_back("23");
-    // vector<string> v3;
-    // v3.push_back("白忠建");
-    // v3.push_back("40");
-    // vector<string> v4;
-    // v4.push_back("赵洋");
-    // v4.push_back("45");
-// //     vector<int> vs;
-// //     vs.push_back(0);
-// //     vs.push_back(1);
 
-    // vector<column> t;
-    // column name("name",0);
-    // column age("age",1);
+    //定义一个全局的库名
+    std::string db;
+    //定义一个全局的表名字
+    std::string tb;
 
-    // t.push_back(name);
-    // t.push_back(age);
+    while (1)
+    {
+        std::string query;
 
-    // string dbPath;
+        hsql::SQLParserResult result;
 
-    // useDb u("student");
-    // dbPath = u.useFolder();
-    // cout << dbPath << endl;
-    // string s = "student";
-    
-    // std::string datafile =dbPath+"/student.dat";
-    // table student(s,dbPath,t);
+        getline(std::cin, query);
 
-    // student.insert(v);
-    // student.insert(v2);
-    // student.insert(v3);
-    // student.insert(v4);
-//insert test end
-//####################################
+        hsql::SQLParser::parse(query, &result);
 
+        if (result.isValid())
+        {
+            auto stmt = (const hsql::SQLStatement *)result.getStatement(0);
 
-//####################################
-//delete test
+            switch (stmt->type())
+            {
+            case hsql::kStmtSelect:
+            {
+                //调用select
+                if (db.empty())
+                {
+                    cout << "BEFORE YOU SELECT, ENTRY A DATABASE FIRST" << endl;
+                }
+                else
+                {
+                    std::cout << "select" << std::endl;
+                    auto stmtSel = (const hsql::SelectStatement *)result.getStatement(0);
+                    tb = stmtSel->fromTable->getName();
+                    //检查表是否存在...
 
-    // std::string delsql = "delete from student where name = eilliot;";
-    // hsql::SQLParserResult result;
-    // hsql::SQLParser::parse(delsql,&result);
-    // auto stmt = (const hsql::DeleteStatement*) result.getStatement(0);
-    // student.del(stmt);
-//delete test end
-//####################################
+                    table t(tb, db);
+                    t.select(stmtSel);
+                }
+            }
 
-//####################################
-//create table test
-    // std::string sql = "create table helix (id TEXT,age INT);";
-    // hsql::SQLParserResult result;
-    // hsql::SQLParser::parse(sql,&result);
-    // auto stmt = (const hsql::CreateStatement*) result.getStatement(0);
+            break;
+                //类型转换....
+            case hsql::kStmtInsert:
+            {
+                //调用select
+                if (db.empty())
+                {
+                    cout << "BEFORE YOU INSERT, ENTRY A DATABASE FIRST" << endl;
+                }
+                else
+                {
+                    std::cout << "insert" << std::endl;
+                    auto stmtIns = (const hsql::InsertStatement *)result.getStatement(0);
+                    tb = stmtIns->tableName;
+                    //检查表是否存在...
 
-    // DB d1;
-    // d1.create_table(stmt);
-//create table test end
-//#####################################
+                    table t(tb, db);
+                    t.insert(stmtIns);
+                }
+            }
 
-//#####################################
-//drop table test
-    std::string sql = "drop table test;";
-    hsql::SQLParserResult result;
-    hsql::SQLParser::parse(sql,&result);
-    auto stmt = (const hsql::DropStatement*) result.getStatement(0);
-    
-    DB test("test");
-    test.drop_table(stmt);
+            break;
+                //类型转换....
+            case hsql::kStmtCreate:
+            {
+                std::cout << "create" << std::endl;
+                auto stmtCre = (const hsql::CreateStatement *)result.getStatement(0);
+                if (stmtCre->schema == nullptr)
+                {
+                    //创建数据表
+                    if (db.empty())
+                    {
+                        cout << "BEFORE YOU CREATE A TABLE, ENTRY A DATABASE FIRST" << endl;
+                    }
+                    else
+                    {
+                        DB database(db);
+                        database.create_table(stmtCre);
+                    }
+                    cout << stmtCre->tableName;
+                }
+                else
+                {
+                    //创建数据库
+                    DB database(stmtCre->schema);
+                    database.createDB();
+                }
+            }
+
+            break;
+                //类型转换....
+            case hsql::kStmtDelete:
+                std::cout << "delete" << std::endl;
+                break;
+                //类型转换....
+            case hsql::kStmtDrop:
+                std::cout << "drop" << std::endl;
+                break;
+                //类型转换....
+            }
+        }
+        else
+        {
+            othersql(&db, query);
+        }
+    }
+
+    return 1;
 }

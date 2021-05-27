@@ -1,2 +1,7 @@
+<<<<<<< HEAD
 name    id  sex
 string  int string
+=======
+name age 
+string int 
+>>>>>>> 60ef72fc994d24ea4aa5a044d110aa61025c38da

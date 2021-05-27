@@ -33,11 +33,11 @@ std::string DB::create_table(const hsql::CreateStatement* stmt)
 
     std::string dir = "../data/" + tablename;
 
-    if(File::dir_exists(dir))
+    if(table_exists(tablename))
     {
-        std::cout<<"table already exists!"<<std::endl;
-        return "exists";
-    }    
+        std::cout<<"table exist!"<<std::endl;
+        return "exist"; 
+    }
 
     
 
@@ -53,53 +53,46 @@ std::string DB::create_table(const hsql::CreateStatement* stmt)
         case hsql::DataType::INT:
             col_types.push_back("int");
             continue;
-        case hsql::DataType::LONG:
-            col_types.push_back("long");
-            continue;
-        case hsql::DataType::FLOAT:
-            col_types.push_back("float");
-            continue;
-        case hsql::DataType::DOUBLE:
-            col_types.push_back("double");
-            continue;
         case hsql::DataType::TEXT:
-            col_types.push_back("text");
+            col_types.push_back("string");
             continue;
         }
     }
 
     
     
-    if(File::create_dir(dir))
+
+    auto fs = File::create("../data/" + tablename +"/"+tablename+".idx");
+    if (!fs.good())
+        std::cout << "fs is bad" << std::endl;
+        
+    for(auto it = col_names.begin();it!=col_names.end();++it)
     {
-        auto fs = File::create("../data/" + tablename +"/"+tablename+".idx");
-        if (!fs.good())
-            std::cout << "fs is bad" << std::endl;
-        
-        for(auto it = col_names.begin();it!=col_names.end();++it)
-        {
-            fs<<*it<<" ";
-        }  
+        fs<<*it<<" ";
+    }  
 
-        fs <<std::endl;
+    fs <<std::endl;
 
-        for(auto it = col_types.begin();it != col_types.end();++it)
-        {
-            fs <<*it<<" ";
-        }
-        fs <<std::endl;
-
-        fs.close();
-
-        
-
-        std::cout<<"create table successfully"<<std::endl;
-        return "success!\n";
+    for(auto it = col_types.begin();it != col_types.end();++it)
+    {
+        fs <<*it<<" ";
     }
+    fs <<std::endl;
+
+    fs.close();
+
+    fs = File::create("../data/" + tablename +"/"+tablename+".dat");
+    if (!fs.good())
+        std::cout << "fs is bad" << std::endl;    
+    fs.close();
+
+    std::cout<<"create table successfully"<<std::endl;
+    return "success!\n";
+    
 
 }
 
-bool table_exists(std::string tablename)
+bool DB::table_exists(std::string tablename)
 {
     std::string path = "../data/" + tablename + "/" + tablename + ".idx";
 

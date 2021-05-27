@@ -12,7 +12,7 @@ using namespace std;
 void table::insert(const hsql::InsertStatement* stmt)
 {   
     //想打开对应的索引表,并获取存放类型的容器,用0代表string,用1代表int
-    std::ifstream fileIdx(database + '/' + tableName + ".idx", ios::app);
+    std::ifstream fileIdx("../data/" + database + '/' + tableName + ".idx", ios::app);
     //创建一个索引类型容器
     vector<int> idx;
     string line;
@@ -80,7 +80,7 @@ void table::insert(const hsql::InsertStatement* stmt)
 
 void table::insertWrite(std::vector<std::string> v)
 {
-    fstream file(database + '/' + tableName + ".dat", ios::app | ios::binary);
+    fstream file("../data/" + database + '/' + tableName + ".dat", ios::app | ios::binary);
     std::string s;
     std::vector<std::string>::iterator it = v.begin();
     while (it != v.end())
@@ -425,7 +425,7 @@ void table::selectPosition(std::string colName, int *colNum)
     string line;
     string oneData;
     string jump;
-    std::ifstream fileIdx(database + '/' + tableName + ".idx", ios::app);
+    std::ifstream fileIdx("../data/" + database + '/' + tableName + ".idx", ios::app);
     getline(fileIdx, line);
     std::stringstream word(line);
     //找到索引列位置
@@ -450,7 +450,7 @@ void table::selectPosition(std::string colName, int *colNum)
 //设置一个函数用于判别条件类型
 void table::selectPair(int colNum, std::string *type)
 {
-    std::ifstream fileIdx(database + '/' + tableName + ".idx", ios::app);
+    std::ifstream fileIdx("../data/" + database + '/' + tableName + ".idx", ios::app);
     string line;
 
     while (getline(fileIdx, line))
@@ -564,7 +564,7 @@ void table::select(const hsql::SelectStatement *stmt)
     std::vector<std::string> lineData;
     //打开一个需要进行select的文件
 
-    std::ifstream file(database + '/' + tableName + ".dat", ios::app);
+    std::ifstream file("../data/" + database + '/' + tableName + ".dat", ios::app);
 
     //创造用于解析cond的变量三个
     std::string A;

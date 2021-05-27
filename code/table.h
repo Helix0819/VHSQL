@@ -38,6 +38,7 @@ public:
     {
         this->tableName = _tname;
         this->database = _dname;
+        // std::cout << "what you find is" << "./data/" << database << '/' << tableName << ".idx" << std::endl;
 
     };
     /*********************insert部分***********************/

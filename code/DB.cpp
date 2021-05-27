@@ -81,7 +81,10 @@ std::string DB::create_table(const hsql::CreateStatement* stmt)
 
     fs.close();
 
-        
+    fs = File::create("../data/" + tablename +"/"+tablename+".dat");
+    if (!fs.good())
+        std::cout << "fs is bad" << std::endl;    
+    fs.close();
 
     std::cout<<"create table successfully"<<std::endl;
     return "success!\n";

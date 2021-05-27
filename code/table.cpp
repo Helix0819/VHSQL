@@ -109,8 +109,8 @@ int table::get_table_colnums(std::string path)
     int num = 0;
     getline(fileIdx, line);
     std::stringstream word(line);
-    cout << word.str() << endl;
-    cout << word.str().size() << endl;
+    // cout << word.str() << endl;
+    // cout << word.str().size() << endl;
     while (word.rdbuf() -> in_avail() != 0)
     {   
         
@@ -412,10 +412,12 @@ void table::del(const hsql::DeleteStatement *stmt)
                     j++;
                 }
                 rewrite_file(rownums,datapath);
+                
                 break;
 
         }
     }
+    std::cout<<"delete success!"<<std::endl;
 	return ;
    
 }

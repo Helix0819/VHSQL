@@ -18,7 +18,7 @@ private:
     
     
     
-    std::vector<column> column_types; //column type and column name
+    //std::vector<column> column_types; //column type and column name
 
     //std::vector<string> column; //column data
     
@@ -40,6 +40,9 @@ public:
         this->database = _dname;
 
     };
+
+    ~table(){}
+    
     /*********************insert部分***********************/
     //insert最终调用部分
     void insert(const hsql::InsertStatement* stmt);

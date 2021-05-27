@@ -162,17 +162,38 @@ int main()
                 std::cout << "delete" << std::endl;
                 auto stmtDel = (const hsql::DeleteStatement*) result.getStatement(0);
 
-             
-
-               
+                //检查表是否存在
+                if (db.empty())
+                {
+                    cout << "BEFORE YOU DELETE, ENTRY A DATABASE FIRST" << endl;
+                }else
+                {
+                    tb = stmtDel->tableName;
+                    table t(tb,db);
+                    t.del(stmtDel);
+                }
             }
             break;
                 //类型转换....
             case hsql::kStmtDrop:
+            {
                 std::cout << "drop" << std::endl;
-                break;
+                auto stmtDrop = (const hsql::DropStatement*) result.getStatement(0);
                 //类型转换....
+                if (db.empty())
+                {
+                    cout << "BEFORE YOU DELETE, ENTRY A DATABASE FIRST" << endl;
+                }else
+                {
+                    DB database(db);
+                    database.drop_function(stmtDrop);
+                    
+                }
             }
+            
+            break;
+            }
+            
         }
         else
         {

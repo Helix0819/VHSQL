@@ -7,12 +7,13 @@
 #include <list>
 //#include "dbms.h"
 #include <unistd.h>
-// #include "../data/test/test.dat"
+#include "file.h"
 
 //#include "DDL.h"
 #include "DB.h"
 // include the sql parser
 #include "SQLParser.h"
+
 
 // contains printing utilities
 #include "util/sqlhelper.h"
@@ -64,6 +65,16 @@ void othersql(string *DBName, string sqlWord)
     }
 }
 
+bool table_exists(std::string dbname, std::string tablename)
+{
+    std::string path = "../data/" + dbname + "/" + tablename + ".dat";
+    std::string pathIdx = "../data/" + dbname + "/" + tablename + ".idx";
+    if(!File::file_exists(path) || !File::file_exists(pathIdx))
+        return false;
+    else
+        return true;
+}
+
 int main()
 {
 
@@ -101,9 +112,12 @@ int main()
                     auto stmtSel = (const hsql::SelectStatement *)result.getStatement(0);
                     tb = stmtSel->fromTable->getName();
                     //检查表是否存在...
-
-                    table t(tb, db);
-                    t.select(stmtSel);
+                    if(table_exists(db, tb)){
+                        table t(tb, db);
+                        t.select(stmtSel);
+                    }else{
+                        cout << "Table Not Found or Not Complete" << endl;
+                    }
                 }
             }
 
@@ -121,10 +135,12 @@ int main()
                     std::cout << "insert" << std::endl;
                     auto stmtIns = (const hsql::InsertStatement *)result.getStatement(0);
                     tb = stmtIns->tableName;
-                    //检查表是否存在...
-
-                    table t(tb, db);
-                    t.insert(stmtIns);
+                    if(table_exists(db, tb)){
+                        table t(tb, db);
+                        t.insert(stmtIns);
+                    }else{
+                        cout << "Table Not Found or Not Complete" << endl;
+                    }
                 }
             }
 
@@ -162,7 +178,7 @@ int main()
             {
                 std::cout << "delete" << std::endl;
                 auto stmtDel = (const hsql::DeleteStatement*) result.getStatement(0);
-
+                
                 //检查表是否存在
                 if (db.empty())
                 {
@@ -170,8 +186,12 @@ int main()
                 }else
                 {
                     tb = stmtDel->tableName;
-                    table t(tb,db);
-                    t.del(stmtDel);
+                    if(table_exists(db, tb)){
+                        table t(tb,db);
+                        t.del(stmtDel);
+                    }else{
+                        cout << "Table Not Found or Not Complete" << endl;
+                    }  
                 }
             }
             break;

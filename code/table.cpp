@@ -250,9 +250,9 @@ void table::del(const hsql::DeleteStatement *stmt)
     char* tmpvalue = stmt->expr->expr2->name; //get the column value
 
     //我在这里修改过tableName-->tablename
-    std::string idxpath = "../data/" + tablename + "/" + tablename + ".idx"; // fmt-file's path
+    std::string idxpath = "../data/" + database + "/" + tablename + ".idx"; // fmt-file's path
 
-    std::string datapath = "../data/" + tablename + "/" + tablename + ".dat"; // data-file's path
+    std::string datapath = "../data/" + database + "/" + tablename + ".dat"; // data-file's path
 
     int colnum = 0;
 
@@ -601,9 +601,10 @@ void table::select(const hsql::SelectStatement *stmt)
             break;
         }
         //拿到B
+        cout << type << endl;
         if(type == "int"){
             B = to_string(stmt->whereClause->expr2->ival);
-        }else if(type == "std::string"){
+        }else if(type == "string"){
             B = stmt->whereClause->expr2->name;
         }
         judge = selectFilter(condColNum, file, op, B, type);

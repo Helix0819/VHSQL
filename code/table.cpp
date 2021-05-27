@@ -603,7 +603,7 @@ void table::select(const hsql::SelectStatement *stmt)
         //拿到B
         if(type == "int"){
             B = to_string(stmt->whereClause->expr2->ival);
-        }else if(type == "std::string"){
+        }else if(type == "string"){
             B = stmt->whereClause->expr2->name;
         }
         judge = selectFilter(condColNum, file, op, B, type);

@@ -143,7 +143,7 @@ void table::rewrite_file(std::vector<int> &rownums,std::string path)
             
             if(rownums[i] == line)
             {
-                stringputfile += "\n";
+                stringputfile += "";
                 break;
             } 
             counter++;      

@@ -158,8 +158,15 @@ int main()
             break;
                 //类型转换....
             case hsql::kStmtDelete:
+            {
                 std::cout << "delete" << std::endl;
-                break;
+                auto stmtDel = (const hsql::DeleteStatement*) result.getStatement(0);
+
+             
+
+               
+            }
+            break;
                 //类型转换....
             case hsql::kStmtDrop:
                 std::cout << "drop" << std::endl;

@@ -12,10 +12,11 @@ void DB::createDB()
     std::string path = "../data/" + dbName;
     if(access(path.c_str(),F_OK) == 0)
     {
-        cout << "DataBase has already exists" << endl;
+        cout << "DataBase exists" << endl;
         // cout << "Database exists" << endl;
     }else{
         mkdir(path.c_str(),S_IRUSR | S_IWUSR | S_IXUSR | S_IRWXG | S_IRWXO);
+        std::cout << "CREATE TABLE SUCCESS" << std::endl;
     }
 }
 
@@ -31,15 +32,15 @@ std::string DB::create_table(const hsql::CreateStatement* stmt)
 
     std::string tablename = stmt->tableName;
 
-    std::string dir = "../data/" + tablename;
+    std::string dir = "../data/" + dbName;
 
-    if(table_exists(tablename))
+    
+
+    if(table_exists(tablename) || table_exists(tablename))
     {
         std::cout<<"table exist!"<<std::endl;
         return "exist"; 
     }
-
-    
 
     for(;it!=stmt->columns->end();++it)
     {
@@ -62,7 +63,7 @@ std::string DB::create_table(const hsql::CreateStatement* stmt)
     
     
 
-    auto fs = File::create("../data/" + tablename +"/"+tablename+".idx");
+    auto fs = File::create(dir +"/"+tablename+".idx");
     if (!fs.good())
         std::cout << "fs is bad" << std::endl;
         
@@ -81,7 +82,7 @@ std::string DB::create_table(const hsql::CreateStatement* stmt)
 
     fs.close();
 
-    fs = File::create("../data/" + tablename +"/"+tablename+".dat");
+    fs = File::create(dir +"/"+tablename+".dat");
     if (!fs.good())
         std::cout << "fs is bad" << std::endl;    
     fs.close();
@@ -94,9 +95,10 @@ std::string DB::create_table(const hsql::CreateStatement* stmt)
 
 bool DB::table_exists(std::string tablename)
 {
-    std::string path = "../data/" + tablename + "/" + tablename + ".idx";
+    std::string pathIdx = "../data/" + dbName + "/" + tablename + ".idx";
+    std::string pathDat = "../data/" + dbName + "/" + tablename + ".dat";
 
-    if(!File::file_exists(path))
+    if(!File::file_exists(pathIdx) || !File::file_exists(pathDat))
         return false;
     else
         return true;
@@ -108,15 +110,20 @@ std::string DB::drop_function(const hsql::DropStatement* stmt)
     {
         std::string tbname = stmt->name;
         
-        std::string tbpath_idx = "../data/" + tbname + "/" + tbname + ".idx"; 
+        std::string tbpath_idx = "../data/" + dbName + "/" + tbname + ".idx"; 
 
-        std::string tbpath_dat = "../data/" + tbname + "/" + tbname + ".dat"; 
+        std::string tbpath_dat = "../data/" + dbName + "/" + tbname + ".dat"; 
 
-        File::rm_file(tbpath_idx);
+        if(table_exists(tbname)){
+            File::rm_file(tbpath_idx);
 
-        File::rm_file(tbpath_dat);
-
-        std::cout<<"table deleted!"<<std::endl;
+            File::rm_file(tbpath_dat);
+            
+            std::cout<<"table deleted!"<<std::endl;
+        }else{
+            std::cout<<"table not found"<<std::endl;
+        }
+        
 
         return "delete table success";
     }else if(stmt->type == hsql::kDropDatabase)
@@ -125,10 +132,13 @@ std::string DB::drop_function(const hsql::DropStatement* stmt)
 
         std::string path = "../data/" + databasename;
 
-        File::rm_dir(path);
-        
-        std::cout<<"database deleted!"<<std::endl;
-
+        if(File::file_exists(path)){
+            File::rm_dir(path);
+            std::cout<<"database deleted!"<<std::endl;
+        }else{
+            std::cout<<"database not found!"<<std::endl;
+        }
+    
         return "database delete success";
     }
 }

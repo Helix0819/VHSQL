@@ -22,9 +22,6 @@ private:
 
 public:
 
-
-
-
     DB(std::string _dbname)
     {
         this->dbName = _dbname;
@@ -35,20 +32,9 @@ public:
 
     std::string create_table(const hsql::CreateStatement* stmt);
 
-    
-    //std::string select();
-
-    //std::string insert();
-
     bool table_exists(std::string tablename);
 
-    
-
     std::string drop_function(const hsql::DropStatement* stmt);
-    
-    std::string update();
-
-    std::string del();
 
 };
 

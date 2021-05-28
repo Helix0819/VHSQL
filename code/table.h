@@ -52,8 +52,6 @@ public:
     /******************************************************/
     //std::string select();
 
-    int update();
-
     void del(const hsql::DeleteStatement* stmt);
 
     void rewrite_file(std::vector<int> &rownums,std::string path);

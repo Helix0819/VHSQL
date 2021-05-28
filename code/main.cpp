@@ -57,6 +57,7 @@ void othersql(string *DBName, string sqlWord)
     if (access(path.c_str(), F_OK) == 0)
     {
         *DBName = *(--other.end());
+        cout << "ENTRY DATABASE " <<*DBName << endl;
     }
     else
     {
@@ -108,7 +109,6 @@ int main()
                 }
                 else
                 {
-                    std::cout << "select" << std::endl;
                     auto stmtSel = (const hsql::SelectStatement *)result.getStatement(0);
                     tb = stmtSel->fromTable->getName();
                     //检查表是否存在...
@@ -122,10 +122,8 @@ int main()
             }
 
             break;
-                //类型转换....
             case hsql::kStmtInsert:
             {
-                //调用select
                 if (db.empty())
                 {
                     cout << "BEFORE YOU INSERT, ENTRY A DATABASE FIRST" << endl;
@@ -138,8 +136,9 @@ int main()
                     if(table_exists(db, tb)){
                         table t(tb, db);
                         t.insert(stmtIns);
+                        
                     }else{
-                        cout << "Table Not Found or Not Complete" << endl;
+                        std::cout << "Table Not Found or Not Complete" << std::endl;
                     }
                 }
             }
@@ -148,7 +147,6 @@ int main()
                 //类型转换....
             case hsql::kStmtCreate:
             {
-                std::cout << "create" << std::endl;
                 auto stmtCre = (const hsql::CreateStatement *)result.getStatement(0);
                 if (stmtCre->schema == nullptr)
                 {
@@ -162,13 +160,13 @@ int main()
                         DB database(db);
                         database.create_table(stmtCre);
                     }
-                    cout << stmtCre->tableName;
                 }
                 else
                 {
                     //创建数据库
                     DB database(stmtCre->schema);
                     database.createDB();
+                    std::cout << "CREATE DATABASE SUCCESS" << std::endl;
                 }
             }
 
@@ -198,18 +196,24 @@ int main()
                 //类型转换....
             case hsql::kStmtDrop:
             {
-                std::cout << "drop" << std::endl;
                 auto stmtDrop = (const hsql::DropStatement*) result.getStatement(0);
                 //类型转换....
-                if (db.empty())
-                {
-                    cout << "BEFORE YOU DELETE, ENTRY A DATABASE FIRST" << endl;
-                }else
-                {
-                    DB database(db);
+                if(stmtDrop->type == hsql::kDropTable){
+                    if (db.empty())
+                    {
+                        cout << "BEFORE YOU DELETE, ENTRY A DATABASE FIRST" << endl;
+                    }else
+                    {
+                        tb = stmtDrop->name;
+                        DB d(db);
+                        d.drop_function(stmtDrop);
+                    }
+                }else{
+                    DB database(stmtDrop->name);
                     database.drop_function(stmtDrop);
-                    
                 }
+                
+                    
             }
             
             break;

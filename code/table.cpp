@@ -25,7 +25,6 @@ void table::insert(const hsql::InsertStatement* stmt)
     while (word.rdbuf() -> in_avail() != 0)
     {
         word >> type;
-        // cout << type << endl;
         if(type == "string"){
             idx.push_back(0);
         }else if(type == "int"){
@@ -75,6 +74,7 @@ void table::insert(const hsql::InsertStatement* stmt)
     }
     //检查完毕,开始插入
     insertWrite(insertData);
+    std::cout << "Insert success" << std::endl;
 }
 //__________________________________WARNING________________________________
 
@@ -119,7 +119,7 @@ int table::get_table_colnums(std::string path)
         word.clear();
         
     }
-    std::cout<<num<<std::endl;
+    // std::cout<<num<<std::endl;
     return num;
 }
 
@@ -601,7 +601,6 @@ void table::select(const hsql::SelectStatement *stmt)
             break;
         }
         //拿到B
-        cout << type << endl;
         if(type == "int"){
             B = to_string(stmt->whereClause->expr2->ival);
         }else if(type == "string"){

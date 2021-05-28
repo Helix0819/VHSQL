@@ -90,6 +90,8 @@ int main()
 
         hsql::SQLParserResult result;
 
+        std::cout<<"VHSQL ";
+
         getline(std::cin, query);
 
         hsql::SQLParser::parse(query, &result);
@@ -174,7 +176,7 @@ int main()
                 //类型转换....
             case hsql::kStmtDelete:
             {
-                std::cout << "delete" << std::endl;
+                
                 auto stmtDel = (const hsql::DeleteStatement*) result.getStatement(0);
                 
                 //检查表是否存在

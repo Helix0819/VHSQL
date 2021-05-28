@@ -138,6 +138,8 @@ void table::rewrite_file(std::vector<int> &rownums,std::string path)
 
     while(getline(in,val1))
     {
+        counter = 0;
+
         for(int i = 0;i<rownums.size();++i)
         {
             
@@ -153,7 +155,7 @@ void table::rewrite_file(std::vector<int> &rownums,std::string path)
         {
             stringputfile += val1;
             stringputfile += "\n";
-            counter = 0;
+            //counter = 0;
         }
         line++;
     }
@@ -293,11 +295,12 @@ void table::del(const hsql::DeleteStatement *stmt)
         while(true)
         {
             tmp = load_data_from_file(datapath,j);
-
+            if(tmp.size() == 0)
+                break;
             if(tmp[colnum] == columnvalue)
             {
                 rownums.push_back(j);
-                break;
+                //break;
             }
 
             j++;
@@ -338,11 +341,12 @@ void table::del(const hsql::DeleteStatement *stmt)
                 while(true)
                 {
                     tmp = load_data_from_file(datapath,j);
-
+                    if(tmp.size() == 0)
+                        break;
                     if(tmp[colnum] == columnvalue)
                     {
                         rownums.push_back(j);
-                        break;
+                        //break;
                      }
 
                     j++;

@@ -66,19 +66,35 @@ std::string DB::create_table(const hsql::CreateStatement* stmt)
     auto fs = File::create(dir +"/"+tablename+".idx");
     if (!fs.good())
         std::cout << "fs is bad" << std::endl;
-        
+    
+    int counter = 0;
+    
     for(auto it = col_names.begin();it!=col_names.end();++it)
     {
+        if(counter == (col_names.size() - 1))
+        {
+            fs<<*it;
+            counter = 0;
+            break;
+        }
         fs<<*it<<" ";
+        counter++;
     }  
 
     fs <<std::endl;
 
     for(auto it = col_types.begin();it != col_types.end();++it)
     {
+        if(counter == (col_types.size() - 1))
+        {
+            fs<<*it;
+            counter = 0;
+            break;
+        }
         fs <<*it<<" ";
+        counter++;
     }
-    fs <<std::endl;
+    //fs <<std::endl;
 
     fs.close();
 

@@ -53,7 +53,7 @@ void othersql(string *DBName, string sqlWord)
         cout << "I DO NOT UNDERSTAND" << endl;
         return;
     }
-    path = "../data/" + *(--other.end());
+    path = "data/" + *(--other.end());
     if (access(path.c_str(), F_OK) == 0)
     {
         *DBName = *(--other.end());
@@ -68,8 +68,8 @@ void othersql(string *DBName, string sqlWord)
 
 bool table_exists(std::string dbname, std::string tablename)
 {
-    std::string path = "../data/" + dbname + "/" + tablename + ".dat";
-    std::string pathIdx = "../data/" + dbname + "/" + tablename + ".idx";
+    std::string path = "data/" + dbname + "/" + tablename + ".dat";
+    std::string pathIdx = "data/" + dbname + "/" + tablename + ".idx";
     if(!File::file_exists(path) || !File::file_exists(pathIdx))
         return false;
     else

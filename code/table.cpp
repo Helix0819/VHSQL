@@ -12,7 +12,7 @@ using namespace std;
 void table::insert(const hsql::InsertStatement* stmt)
 {   
     //想打开对应的索引表,并获取存放类型的容器,用0代表string,用1代表int
-    std::ifstream fileIdx("../data/" + database + '/' + tableName + ".idx", ios::app);
+    std::ifstream fileIdx("data/" + database + '/' + tableName + ".idx", ios::app);
     //创建一个索引类型容器
     vector<int> idx;
     string line;
@@ -80,7 +80,7 @@ void table::insert(const hsql::InsertStatement* stmt)
 
 void table::insertWrite(std::vector<std::string> v)
 {
-    fstream file("../data/" + database + '/' + tableName + ".dat", ios::app | ios::binary);
+    fstream file("data/" + database + '/' + tableName + ".dat", ios::app | ios::binary);
     std::string s;
     std::vector<std::string>::iterator it = v.begin();
     while (it != v.end())
@@ -245,22 +245,41 @@ std::vector<std::string> table::load_one_row_from_data(std::string path)
 void table::del(const hsql::DeleteStatement *stmt)
 {
 
+    if(stmt->expr == nullptr)
+    {
+        std::string tbname = stmt->tableName;
+
+        std::string tmpath = "data/" + database + "/" +tbname + ".dat";
+        
+        File::rm_file(tmpath);
+
+        auto fs = File::create(tmpath);
+        if(!fs.good())
+            std::cout << "fs is bad" << std::endl;    
+        fs.close();
+
+        std::cout<<"delete all data"<<std::endl;
+
+        return ;
+    }
+
     std::string tablename = stmt->tableName; //get tablename
 
     std::string columname = stmt->expr->expr->name; //get the name of colmun gonna be deleted
 
+
     char* tmpvalue = stmt->expr->expr2->name; //get the column value
 
     //我在这里修改过tableName-->tablename
-    std::string idxpath = "../data/" + database + "/" + tablename + ".idx"; // fmt-file's path
+    std::string idxpath = "data/" + database + "/" + tablename + ".idx"; // fmt-file's path
 
-    std::string datapath = "../data/" + database + "/" + tablename + ".dat"; // data-file's path
+    std::string datapath = "data/" + database + "/" + tablename + ".dat"; // data-file's path
 
     int colnum = 0;
 
     std::vector<int> rownums;
 
-
+    
 
 
 
@@ -431,7 +450,7 @@ void table::selectPosition(std::string colName, int *colNum)
     string line;
     string oneData;
     string jump;
-    std::ifstream fileIdx("../data/" + database + '/' + tableName + ".idx", ios::app);
+    std::ifstream fileIdx("data/" + database + '/' + tableName + ".idx", ios::app);
     getline(fileIdx, line);
     std::stringstream word(line);
     //找到索引列位置
@@ -456,7 +475,7 @@ void table::selectPosition(std::string colName, int *colNum)
 //设置一个函数用于判别条件类型
 void table::selectPair(int colNum, std::string *type)
 {
-    std::ifstream fileIdx("../data/" + database + '/' + tableName + ".idx", ios::app);
+    std::ifstream fileIdx("data/" + database + '/' + tableName + ".idx", ios::app);
     string line;
 
     while (getline(fileIdx, line))
@@ -570,7 +589,7 @@ void table::select(const hsql::SelectStatement *stmt)
     std::vector<std::string> lineData;
     //打开一个需要进行select的文件
 
-    std::ifstream file("../data/" + database + '/' + tableName + ".dat", ios::app);
+    std::ifstream file("data/" + database + '/' + tableName + ".dat", ios::app);
 
     //创造用于解析cond的变量三个
     std::string A;

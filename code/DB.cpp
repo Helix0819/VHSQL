@@ -9,14 +9,14 @@
 void DB::createDB()
 {
     // std::string db = stmt->tableName;
-    std::string path = "../data/" + dbName;
+    std::string path = "data/" + dbName;
     if(access(path.c_str(),F_OK) == 0)
     {
         cout << "DataBase exists" << endl;
         // cout << "Database exists" << endl;
     }else{
         mkdir(path.c_str(),S_IRUSR | S_IWUSR | S_IXUSR | S_IRWXG | S_IRWXO);
-        std::cout << "CREATE TABLE SUCCESS" << std::endl;
+        std::cout << "CREATE DATABASE SUCCESS" << std::endl;
     }
 }
 
@@ -32,7 +32,7 @@ std::string DB::create_table(const hsql::CreateStatement* stmt)
 
     std::string tablename = stmt->tableName;
 
-    std::string dir = "../data/" + dbName;
+    std::string dir = "data/" + dbName;
 
     
 
@@ -111,8 +111,8 @@ std::string DB::create_table(const hsql::CreateStatement* stmt)
 
 bool DB::table_exists(std::string tablename)
 {
-    std::string pathIdx = "../data/" + dbName + "/" + tablename + ".idx";
-    std::string pathDat = "../data/" + dbName + "/" + tablename + ".dat";
+    std::string pathIdx = "data/" + dbName + "/" + tablename + ".idx";
+    std::string pathDat = "data/" + dbName + "/" + tablename + ".dat";
 
     if(!File::file_exists(pathIdx) || !File::file_exists(pathDat))
         return false;
@@ -126,9 +126,9 @@ std::string DB::drop_function(const hsql::DropStatement* stmt)
     {
         std::string tbname = stmt->name;
         
-        std::string tbpath_idx = "../data/" + dbName + "/" + tbname + ".idx"; 
+        std::string tbpath_idx = "data/" + dbName + "/" + tbname + ".idx"; 
 
-        std::string tbpath_dat = "../data/" + dbName + "/" + tbname + ".dat"; 
+        std::string tbpath_dat = "data/" + dbName + "/" + tbname + ".dat"; 
 
         if(table_exists(tbname)){
             File::rm_file(tbpath_idx);
@@ -146,7 +146,7 @@ std::string DB::drop_function(const hsql::DropStatement* stmt)
     {
         std::string databasename = stmt->name;
 
-        std::string path = "../data/" + databasename;
+        std::string path = "data/" + databasename;
 
         if(File::file_exists(path)){
             File::rm_dir(path);
